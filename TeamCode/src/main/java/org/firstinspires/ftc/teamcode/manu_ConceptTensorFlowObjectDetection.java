@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -102,15 +100,8 @@ public class manu_ConceptTensorFlowObjectDetection extends LinearOpMode {
                     visionPortal.resumeStreaming();
                 }
 
-                double xvalue = getPropXPosition();
 
-                if(xvalue > 300) {
-                    telemetry.addData("where am i ","middle");
-                } else if (xvalue < 300){
-                    telemetry.addData("where am i"," right");
-                }else{
-                    telemetry.addData("where am i "," left ");
-                }
+                getPropXPosition();
 
 
                 // Share the CPU.
@@ -208,17 +199,23 @@ public class manu_ConceptTensorFlowObjectDetection extends LinearOpMode {
 
     }   // end method telemetryTfod()
 
-    private double getPropXPosition() {
+    private void getPropXPosition() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2;
-
-
+            double xvalue = (recognition.getLeft() + recognition.getRight()) / 2;
+            telemetry.addData("X:", xvalue);
+            if(xvalue > 415) {
+                telemetry.addData("where am i ","right");
+            } else if ( xvalue < 415 && xvalue > 150){
+                telemetry.addData("where am i"," middle");
+            } else {
+                telemetry.addData("where am i "," left ");
+            }
         }
-        return 400;
+
     }
 
 }

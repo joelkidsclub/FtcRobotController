@@ -111,9 +111,9 @@ public class BlueBackdropDrive extends LinearOpMode {
 
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
-            case 1: xValBackdrop = 22; break;
+            case 1: xValBackdrop = 18; break;
             case 2: xValBackdrop = 28; break;
-            case 3: xValBackdrop = 34; break;
+            case 3: xValBackdrop = 35; break;
 
         }
         forwardPush1 = drive.trajectoryBuilder(new Pose2d())
@@ -127,13 +127,13 @@ public class BlueBackdropDrive extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(xValBackdrop, 30, Math.toRadians(90)), Math.toRadians(0))
                 .build();
         strafeParkRight4 = drive.trajectoryBuilder(splineToBackdrop3.end())
-                .strafeRight(50-xValBackdrop)
-                .build();
-        strafeParkLeft4 = drive.trajectoryBuilder(splineToBackdrop3.end())
-                .strafeLeft(xValBackdrop-2)
+                .strafeRight(48-xValBackdrop)
                 .build();
         forwardParkRight5 = drive.trajectoryBuilder(strafeParkRight4.end())
                 .forward(20)
+                .build();
+        strafeParkLeft4 = drive.trajectoryBuilder(splineToBackdrop3.end())
+                .strafeLeft(xValBackdrop-2.5)
                 .build();
         forwardParkLeft5 = drive.trajectoryBuilder(strafeParkLeft4.end())
                 .forward(20)

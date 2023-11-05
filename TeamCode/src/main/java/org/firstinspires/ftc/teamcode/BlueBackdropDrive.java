@@ -80,7 +80,8 @@ public class BlueBackdropDrive extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-
+        drive.followTrajectory(forwardPush1);
+        drive.followTrajectory(back2);
         drive.followTrajectory(splineToBackdrop3);
         sleep(5000);
 
@@ -110,9 +111,7 @@ public class BlueBackdropDrive extends LinearOpMode {
 
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
-            case 1:
-                xValBackdrop = 22;
-                break;
+            case 1: xValBackdrop = 22; break;
             case 2: xValBackdrop = 28; break;
             case 3: xValBackdrop = 34; break;
 

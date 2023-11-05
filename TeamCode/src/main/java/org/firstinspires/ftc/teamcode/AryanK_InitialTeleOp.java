@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Aryan's Basic: Omni Linear OpMode", group="Linear OpMode")
+@TeleOp(name="Aryan's W Basic: Omni Linear OpMode", group="Linear OpMode")
 //@Disabled
 public class AryanK_InitialTeleOp extends LinearOpMode {
 
@@ -57,6 +57,7 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 
     private double speed = 1;
     private double turnspeed = 1;
+    private int inverted = 1;
 
 
     private DcMotor linearSlideLeft = null;
@@ -68,6 +69,7 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
     private double upspeed;
 
     private Servo pixelMover;
+    private DcMotor LinearActuator;
 
 
     @Override
@@ -87,6 +89,7 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         intake = hardwareMap.get(DcMotor.class, "INTAKE");
         pixelMover = hardwareMap.get(Servo.class, "boxmover");
+        LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
 
         // ########################################################################################
@@ -106,12 +109,15 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        pixelMover.setDirection(Servo.Direction.FORWARD);
+        pixelMover.setDirection(Servo.Direction.REVERSE);
+        LinearActuator.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+
+        pixelMover.setPosition(0.1);
         waitForStart();
         runtime.reset();
 
@@ -132,25 +138,36 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
                 turnspeed = 0.5;
             }
 
+            if (gamepad1.square){
+                inverted = -1;
+            }
+
+            if(gamepad1.circle){
+                inverted = 1;
+            }
+
             double LinearSlideMovement = gamepad2.left_stick_y * -upspeed;
             linearSlideLeft.setPower(LinearSlideMovement);
             linearSlideRight.setPower(LinearSlideMovement);
 
-            telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
-            telemetry.update();
+            double IntakeMovement = gamepad2.right_stick_y;
+            intake.setPower(IntakeMovement);
+
 
             if (gamepad2.dpad_down){
-                intake.setPower(0.65);
+                LinearActuator.setPower(1);
             }else if (gamepad2.dpad_up){
-                intake.setPower(-0.65);
-            } else {
-                intake.setPower(0);
+                LinearActuator.setPower(-1);
+            }else{
+                LinearActuator.setPower(0);
             }
 
             if (gamepad2.triangle){
-                pixelMover.setPosition(0.5);
-            }else if(gamepad2.x){
-                pixelMover.setPosition(0);
+                pixelMover.setPosition(0.9);
+            }else if(gamepad2.circle){
+                pixelMover.setPosition(0.0);
+            }else if(gamepad2.square) {
+                pixelMover.setPosition(0.50);
             }
 
 
@@ -168,9 +185,9 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = gamepad1.left_stick_y * speed;  // Note: pushing stick forward gives negative value
-            double lateral = gamepad1.left_stick_x * -speed;
-            double yaw = gamepad1.right_stick_x * -turnspeed;
+            double axial = gamepad1.left_stick_y * speed * inverted;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x * -speed* inverted;
+            double yaw = gamepad1.right_stick_x * -turnspeed * inverted;
 
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
@@ -206,9 +223,13 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
 
 //            DistanceSensor();
-//            ColorSensor();
+//
+//           ColorSensor();
 
+            telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
+            telemetry.addData("PixelMoverPosition", pixelMover.getPosition());
             telemetry.update();
+
         }
     }
 

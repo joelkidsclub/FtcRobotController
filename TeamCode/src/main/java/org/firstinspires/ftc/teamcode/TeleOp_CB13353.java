@@ -36,9 +36,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="X Aryan's W Basic: Omni Linear OpMode", group="Linear OpMode")
+@TeleOp(name="A TeleOp Main", group="Linear OpMode")
 //@Disabled
-public class AryanK_InitialTeleOp extends LinearOpMode {
+public class TeleOp_CB13353 extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -117,7 +117,7 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         telemetry.update();
 
 
-        pixelMover.setPosition(0.1);
+        pixelMover.setPosition(0.28);
         waitForStart();
         runtime.reset();
 
@@ -163,11 +163,18 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             }
 
             if (gamepad2.triangle){
-                pixelMover.setPosition(0.9);
-            }else if(gamepad2.circle){
-                pixelMover.setPosition(0.0);
-            }else if(gamepad2.square) {
+                pixelMover.setPosition(0.95);
+                telemetry.addData("Triangle is pressed", pixelMover.getPosition());
+            }
+
+            if(gamepad2.circle){
+                pixelMover.setPosition(0.28);
+                telemetry.addData("Circle is pressed", pixelMover.getPosition());
+            }
+
+            if(gamepad2.square) {
                 pixelMover.setPosition(0.50);
+                telemetry.addData("Square is pressed", pixelMover.getPosition());
             }
 
 
@@ -222,11 +229,14 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
 
+
 //            DistanceSensor();
 //
 //           ColorSensor();
 
             telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
+            telemetry.addData("Left slide", linearSlideLeft.getCurrentPosition());
+            telemetry.addData("Right slide", linearSlideRight.getCurrentPosition());
             telemetry.addData("PixelMoverPosition", pixelMover.getPosition());
             telemetry.update();
 

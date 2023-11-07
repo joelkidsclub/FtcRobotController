@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -115,14 +116,16 @@ public class TeleOp_CB13353 extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+        linearSlideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        linearSlideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         pixelMover.setPosition(0.28);
         waitForStart();
         runtime.reset();
 
         upspeed = 0.4;
-
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -176,7 +179,14 @@ public class TeleOp_CB13353 extends LinearOpMode {
                 pixelMover.setPosition(0.50);
                 telemetry.addData("Square is pressed", pixelMover.getPosition());
             }
-
+/*
+            if (linearSlideLeft.getCurrentPosition() <= 0) {
+                pixelMover.setPosition(0.28);
+            }
+            if (linearSlideRight.getCurrentPosition() <= -2000) {
+                pixelMover.setPosition(0.28);
+            }
+*/
 
 
 //            if (gamepad1.dpad_down){

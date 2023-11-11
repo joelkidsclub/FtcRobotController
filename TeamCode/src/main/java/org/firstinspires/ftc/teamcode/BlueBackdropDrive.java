@@ -17,8 +17,11 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
+import java.util.List;
 import java.util.logging.XMLFormatter;
 
 /*
@@ -28,8 +31,9 @@ import java.util.logging.XMLFormatter;
 @Autonomous(group = "drive")
 //@Disabled
 public class BlueBackdropDrive extends LinearOpMode {
-
-
+    //april tag processor
+    AprilTagProcessor aprilTag;
+    VisionPortal myVisionPortal;
     Trajectory forwardPush1;
     Trajectory back2;
 
@@ -72,6 +76,7 @@ public class BlueBackdropDrive extends LinearOpMode {
 
         //will run while the code hasn't been run
         initialize();
+        myVisionPortal.setProcessorEnabled(tfod, true);
         telemetry.addData("element position", elementPos);
         telemetry.update();
 
@@ -83,7 +88,14 @@ public class BlueBackdropDrive extends LinearOpMode {
         drive.followTrajectory(forwardPush1);
         drive.followTrajectory(back2);
         drive.followTrajectory(splineToBackdrop3);
+
+        myVisionPortal.setProcessorEnabled(tfod, false);
+        myVisionPortal.setProcessorEnabled(aprilTag, true);
+
+        detectAprilTag();
+
         sleep(5000);
+        myVisionPortal.setProcessorEnabled(aprilTag, false);
 
 
         if (elementPos == 3) {
@@ -104,10 +116,7 @@ public class BlueBackdropDrive extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) ;
     }
 
-    private void initTfod() {
 
-
-    }   // end method initTfod()
 
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
@@ -141,64 +150,37 @@ public class BlueBackdropDrive extends LinearOpMode {
     }
     public void initialize(){
         // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
+        // -----------------------------------------------------------------------------------------
+        // AprilTag Configuration
+        // -----------------------------------------------------------------------------------------
 
-                // With the following lines commented out, the default TfodProcessor Builder
-                // will load the default model for the season. To define a custom model to load,
-                // choose one of the following:
-                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                .setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
-
-                // The following default settings are available to un-comment and edit as needed to
-                // set parameters for custom models.
-                .setModelLabels(LABELS)
-                .setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
-
+        aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
+        // -----------------------------------------------------------------------------------------
+        // TFOD Configuration
+        // -----------------------------------------------------------------------------------------
 
-        // Set the camera (webcam vs. built-in RC phone camera).
+        tfod = new TfodProcessor.Builder()
+                .build();
+
+        // -----------------------------------------------------------------------------------------
+        // Camera Configuration
+        // -----------------------------------------------------------------------------------------
+
         if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessors(tfod, aprilTag)
+                    .build();
         } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(BuiltinCameraDirection.BACK)
+                    .addProcessors(tfod, aprilTag)
+                    .build();
         }
 
-        // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
-
-        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
-
-        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
-
-        // Set and enable the processor.
-        builder.addProcessor(tfod);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-        // Set confidence threshold for TFOD recognitions, at any time.
-        //tfod.setMinResultConfidence(0.75f);
-
-        // Disable or re-enable the TFOD processor at any time.
-        //visionPortal.setProcessorEnabled(tfod, true);
-
         while(!isStarted() && !isStopRequested()){
-            initTfod();
             tfod.setZoom(2.0);
 
             //sets element position depending on the position of the detected element
@@ -217,6 +199,49 @@ public class BlueBackdropDrive extends LinearOpMode {
                     elementPos = 3;
                 }
             }
+        }
+    }
+
+
+    boolean targetFound;
+    private AprilTagDetection desiredTag = null;
+    int DESIRED_TAG_ID = 1;
+    public void detectAprilTag(){
+        targetFound = false;
+        desiredTag  = null;
+
+        // Step through the list of detected tags and look for a matching tag
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            // Look to see if we have size info on this tag.
+            telemetry.addData("something", "detected W");
+            telemetry.update();
+            if (detection.metadata != null) {
+                //  Check to see if we want to track towards this tag.
+                if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                    // Yes, we want to use this tag.
+                    targetFound = true;
+                    desiredTag = detection;
+                    break;  // don't look any further.
+                } else {
+                    // This tag is in the library, but we do not want to track it right now.
+                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+
+                }
+            } else {
+                // This tag is NOT in the library, so we don't have enough information to track to it.
+                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+            }
+        }
+
+        // Tell the driver what we see, and what to do.
+        if (targetFound) {
+            telemetry.addData("id","matches");
+            telemetry.update();
+
+        } else {
+            telemetry.addData("\n>","find valid target\n");
+            telemetry.update();
         }
     }
 }

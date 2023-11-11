@@ -130,9 +130,9 @@ public class RedAudienceDrive extends LinearOpMode {
         forwardBoundary5 = drive.trajectoryBuilder(strafeRight4.end())
                 .forward(30)
                 .build();
-        splineToBackdrop6 = drive.trajectoryBuilder(forwardBoundary5)
+        splineToBackdrop6 = drive.trajectoryBuilder(forwardBoundary5.end())
                 .splineToLinearHeading(new Pose2d(40, 40, Math.toRadians(90)), Math.toRadians(0))
-                .build()
+                .build();
         //spline to the backdrop facing backwards (180)
         //pixel stuff
 

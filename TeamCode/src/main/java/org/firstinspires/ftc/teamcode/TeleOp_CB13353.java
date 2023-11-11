@@ -70,6 +70,7 @@ public class TeleOp_CB13353 extends LinearOpMode {
     private double upspeed;
 
     private Servo pixelMover;
+    private Servo gate;
     private DcMotor LinearActuator;
 
 
@@ -83,13 +84,14 @@ public class TeleOp_CB13353 extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "BLD");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "FRD");
         rightBackDrive = hardwareMap.get(DcMotor.class, "BRD");
-//        distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
-//        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
-//        colorSensor = hardwareMap.get(ColorSensor.class, "color");
+//      distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
+//      touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+//      colorSensor = hardwareMap.get(ColorSensor.class, "color");
         linearSlideLeft = hardwareMap.get(DcMotor.class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         intake = hardwareMap.get(DcMotor.class, "INTAKE");
         pixelMover = hardwareMap.get(Servo.class, "boxmover");
+        gate = hardwareMap.get(Servo.class, "gate");
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
 
@@ -157,9 +159,9 @@ public class TeleOp_CB13353 extends LinearOpMode {
             intake.setPower(IntakeMovement);
 
 
-            if (gamepad2.dpad_down){
+            if (gamepad2.dpad_left){
                 LinearActuator.setPower(1);
-            }else if (gamepad2.dpad_up){
+            }else if (gamepad2.dpad_right){
                 LinearActuator.setPower(-1);
             }else{
                 LinearActuator.setPower(0);
@@ -179,6 +181,14 @@ public class TeleOp_CB13353 extends LinearOpMode {
                 pixelMover.setPosition(0.50);
                 telemetry.addData("Square is pressed", pixelMover.getPosition());
             }
+
+            if(gamepad2.dpad_up) {
+                gate.setPosition(0.135);
+            }
+
+            if(gamepad2.dpad_down) {
+                gate.setPosition(0.66);
+            }
 /*
             if (linearSlideLeft.getCurrentPosition() <= 0) {
                 pixelMover.setPosition(0.28);
@@ -187,6 +197,8 @@ public class TeleOp_CB13353 extends LinearOpMode {
                 pixelMover.setPosition(0.28);
             }
 */
+
+
 
 
 //            if (gamepad1.dpad_down){

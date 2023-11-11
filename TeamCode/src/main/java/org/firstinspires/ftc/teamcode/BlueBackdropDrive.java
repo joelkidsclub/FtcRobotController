@@ -32,7 +32,7 @@ import java.util.logging.XMLFormatter;
 //@Disabled
 public class BlueBackdropDrive extends LinearOpMode {
     //april tag processor
-    AprilTagProcessor aprilTag;
+
     VisionPortal myVisionPortal;
     Trajectory forwardPush1;
     Trajectory back2;
@@ -63,7 +63,7 @@ public class BlueBackdropDrive extends LinearOpMode {
             "Blue Element"
     };
     private TfodProcessor tfod;
-    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTag;
     boolean elementDetected = false;
 
     @Override
@@ -76,7 +76,7 @@ public class BlueBackdropDrive extends LinearOpMode {
 
         //will run while the code hasn't been run
         initialize();
-        myVisionPortal.setProcessorEnabled(tfod, true);
+
         telemetry.addData("element position", elementPos);
         telemetry.update();
 
@@ -92,9 +92,10 @@ public class BlueBackdropDrive extends LinearOpMode {
         myVisionPortal.setProcessorEnabled(tfod, false);
         myVisionPortal.setProcessorEnabled(aprilTag, true);
 
-        detectAprilTag();
 
-        sleep(5000);
+        sleep(2000);
+        detectAprilTag();
+        sleep(6000);
         myVisionPortal.setProcessorEnabled(aprilTag, false);
 
 
@@ -157,12 +158,30 @@ public class BlueBackdropDrive extends LinearOpMode {
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
+        tfod = new TfodProcessor.Builder()
+
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
+
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
+
+                .build();
+
         // -----------------------------------------------------------------------------------------
         // TFOD Configuration
         // -----------------------------------------------------------------------------------------
 
-        tfod = new TfodProcessor.Builder()
-                .build();
 
         // -----------------------------------------------------------------------------------------
         // Camera Configuration
@@ -181,7 +200,9 @@ public class BlueBackdropDrive extends LinearOpMode {
         }
 
         while(!isStarted() && !isStopRequested()){
+            myVisionPortal.setProcessorEnabled(tfod, true);
             tfod.setZoom(2.0);
+
 
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
@@ -216,7 +237,10 @@ public class BlueBackdropDrive extends LinearOpMode {
             // Look to see if we have size info on this tag.
             telemetry.addData("something", "detected W");
             telemetry.update();
-            if (detection.metadata != null) {
+            double tagPoseX = detection.ftcPose.x;
+            telemetry.addData("tag position", tagPoseX);
+            telemetry.update();
+            if (detection.metadata != null && tagPoseX > 220 && tagPoseX < 280) {
                 //  Check to see if we want to track towards this tag.
                 if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
                     // Yes, we want to use this tag.

@@ -32,10 +32,17 @@ import java.util.logging.XMLFormatter;
 //@Disabled
 public class BlueBackdropDrive extends LinearOpMode {
     //april tag processor
-    AprilTagProcessor aprilTag;
+
     VisionPortal myVisionPortal;
-    Trajectory forwardPush1;
+
+    //left commands
+
+
+    //middle commands
+    Trajectory mForwardPush1;
     Trajectory back2;
+
+    //right commands
 
     //spines to the backdrop depending on element position (look at x val on trajectory in initTraj)
     Trajectory splineToBackdrop3;
@@ -63,7 +70,7 @@ public class BlueBackdropDrive extends LinearOpMode {
             "Blue Element"
     };
     private TfodProcessor tfod;
-    private VisionPortal visionPortal;
+    private AprilTagProcessor aprilTag;
     boolean elementDetected = false;
 
     @Override
@@ -76,7 +83,7 @@ public class BlueBackdropDrive extends LinearOpMode {
 
         //will run while the code hasn't been run
         initialize();
-        myVisionPortal.setProcessorEnabled(tfod, true);
+
         telemetry.addData("element position", elementPos);
         telemetry.update();
 
@@ -92,9 +99,10 @@ public class BlueBackdropDrive extends LinearOpMode {
         myVisionPortal.setProcessorEnabled(tfod, false);
         myVisionPortal.setProcessorEnabled(aprilTag, true);
 
-        detectAprilTag();
 
-        sleep(5000);
+        sleep(2000);
+        detectAprilTag();
+        sleep(6000);
         myVisionPortal.setProcessorEnabled(aprilTag, false);
 
 
@@ -120,11 +128,46 @@ public class BlueBackdropDrive extends LinearOpMode {
 
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
-            case 1: xValBackdrop = 18; break;
-            case 2: xValBackdrop = 28; break;
-            case 3: xValBackdrop = 35; break;
+            case 1:
+                xValBackdrop = 18;
+                Trajectory lBackward = drive.trajectoryBuilder(new Pose2d())
+                        .back()
+                        .build();
+                drive.turn(Math.toRadians(90));
+                Trajectory lBackward2 = drive.trajectoryBuilder(lBackward.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
+                        .back()
+                        .build();
+                Trajectory lStrafeRight3 = drive.trajectoryBuilder(lBackward2.end())
+                    .strafeRight()
+                    .build();
+                Trajectory lBackward4 = drive.trajectoryBuilder(lStrafeRight3.end())
+                        .strafeRight()
+                        .build();
+                Trajectory lSplineToBackdrop5 = drive.trajectoryBuilder(lBackward4.end())
+                        .splineToSplineHeading(18, 30, //init orientation, //new orientation)
+                        .build();;
+
+                break;
+            case 2:
+                xValBackdrop = 28;
+                Trajectory mBackwardl;
+                //drop
+                Trajectory mForward2;
+                Trajectory mSplineToBackdrop;
+                break;
+            case 3:
+                xValBackdrop = 35;
+                Trajectory rBackward1;
+                //turn right
+                Trajectory rBackward2;
+                //drop
+                Trajectory rForward3;
+                Trajectory rSpineToBackdrop;
+                break;
+
 
         }
+        /*
         forwardPush1 = drive.trajectoryBuilder(new Pose2d())
                 .forward(36)
                 .build();
@@ -147,6 +190,8 @@ public class BlueBackdropDrive extends LinearOpMode {
         forwardParkLeft5 = drive.trajectoryBuilder(strafeParkLeft4.end())
                 .forward(20)
                 .build();
+
+         */
     }
     public void initialize(){
         // Create the TensorFlow processor by using a builder.
@@ -157,12 +202,30 @@ public class BlueBackdropDrive extends LinearOpMode {
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
+        tfod = new TfodProcessor.Builder()
+
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
+
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
+
+                .build();
+
         // -----------------------------------------------------------------------------------------
         // TFOD Configuration
         // -----------------------------------------------------------------------------------------
 
-        tfod = new TfodProcessor.Builder()
-                .build();
 
         // -----------------------------------------------------------------------------------------
         // Camera Configuration
@@ -181,7 +244,9 @@ public class BlueBackdropDrive extends LinearOpMode {
         }
 
         while(!isStarted() && !isStopRequested()){
+            myVisionPortal.setProcessorEnabled(tfod, true);
             tfod.setZoom(2.0);
+
 
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
@@ -216,7 +281,10 @@ public class BlueBackdropDrive extends LinearOpMode {
             // Look to see if we have size info on this tag.
             telemetry.addData("something", "detected W");
             telemetry.update();
-            if (detection.metadata != null) {
+            double tagPoseX = detection.ftcPose.x;
+            telemetry.addData("tag position", tagPoseX);
+            telemetry.update();
+            if (detection.metadata != null && tagPoseX > 220 && tagPoseX < 280) {
                 //  Check to see if we want to track towards this tag.
                 if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
                     // Yes, we want to use this tag.

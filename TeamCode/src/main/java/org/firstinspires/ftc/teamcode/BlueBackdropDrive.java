@@ -34,8 +34,15 @@ public class BlueBackdropDrive extends LinearOpMode {
     //april tag processor
 
     VisionPortal myVisionPortal;
-    Trajectory forwardPush1;
+
+    //left commands
+
+
+    //middle commands
+    Trajectory mForwardPush1;
     Trajectory back2;
+
+    //right commands
 
     //spines to the backdrop depending on element position (look at x val on trajectory in initTraj)
     Trajectory splineToBackdrop3;
@@ -121,11 +128,46 @@ public class BlueBackdropDrive extends LinearOpMode {
 
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
-            case 1: xValBackdrop = 18; break;
-            case 2: xValBackdrop = 28; break;
-            case 3: xValBackdrop = 35; break;
+            case 1:
+                xValBackdrop = 18;
+                Trajectory lBackward = drive.trajectoryBuilder(new Pose2d())
+                        .back()
+                        .build();
+                drive.turn(Math.toRadians(90));
+                Trajectory lBackward2 = drive.trajectoryBuilder(lBackward.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
+                        .back()
+                        .build();
+                Trajectory lStrafeRight3 = drive.trajectoryBuilder(lBackward2.end())
+                    .strafeRight()
+                    .build();
+                Trajectory lBackward4 = drive.trajectoryBuilder(lStrafeRight3.end())
+                        .strafeRight()
+                        .build();
+                Trajectory lSplineToBackdrop5 = drive.trajectoryBuilder(lBackward4.end())
+                        .splineToSplineHeading(18, 30, //init orientation, //new orientation)
+                        .build();;
+
+                break;
+            case 2:
+                xValBackdrop = 28;
+                Trajectory mBackwardl;
+                //drop
+                Trajectory mForward2;
+                Trajectory mSplineToBackdrop;
+                break;
+            case 3:
+                xValBackdrop = 35;
+                Trajectory rBackward1;
+                //turn right
+                Trajectory rBackward2;
+                //drop
+                Trajectory rForward3;
+                Trajectory rSpineToBackdrop;
+                break;
+
 
         }
+        /*
         forwardPush1 = drive.trajectoryBuilder(new Pose2d())
                 .forward(36)
                 .build();
@@ -148,6 +190,8 @@ public class BlueBackdropDrive extends LinearOpMode {
         forwardParkLeft5 = drive.trajectoryBuilder(strafeParkLeft4.end())
                 .forward(20)
                 .build();
+
+         */
     }
     public void initialize(){
         // Create the TensorFlow processor by using a builder.

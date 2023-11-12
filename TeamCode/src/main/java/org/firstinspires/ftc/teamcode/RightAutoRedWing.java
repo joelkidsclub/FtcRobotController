@@ -127,9 +127,6 @@ public class RightAutoRedWing extends LinearOpMode {
             switch (currentState) {
                 case STATE_INITIAL:
                     step = 0;
-                    myVisionPortal.setProcessorEnabled(aprilTag, false);
-                    myVisionPortal.setProcessorEnabled(tfod, true);
-
                     telemetry.addData("STEP 0: STATE_INITIAL - drive.isBusy() ", drive.isBusy());
                     if (!drive.isBusy()) {
                         currentState = State.STATE_STEP1_BACK25;
@@ -246,7 +243,6 @@ public class RightAutoRedWing extends LinearOpMode {
                     drive.turn(Math.toRadians(180));
                     break;
                 case STATE_POS3_STEP5:
-                    step = 12;
                     telemetry.addData("STEP 12: STATE_POS3_STEP5: currentState => ", currentState);
                     currentState = State.STATE_POS_REALIGN;
                     telemetry.addData("STEP 12: STATE_POS3_STEP5: nextState => ", currentState);
@@ -257,11 +253,8 @@ public class RightAutoRedWing extends LinearOpMode {
                     step = 98;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
                     currentState = State.STATE_PARK;
-
-                    myVisionPortal.setProcessorEnabled(tfod, false);
-                    myVisionPortal.setProcessorEnabled(aprilTag, true);
-
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
+
                     break;
                 case STATE_PARK:
                     step = 99;

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -37,9 +38,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="A TeleOp Main", group="Linear OpMode")
-//@Disabled
-public class TeleOp_CB13353 extends LinearOpMode {
+@TeleOp(name="Main TeleOp", group="Linear OpMode")
+@Disabled
+public class New_AryanK_InitialTeleOp extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -66,11 +67,11 @@ public class TeleOp_CB13353 extends LinearOpMode {
     private DcMotor linearSlideRight = null;
 
     private DcMotor intake = null;
+    private Servo gate;
 
     private double upspeed;
 
-    private Servo pixelMover;
-    private Servo gate;
+    private CRServo pixelMover;
     private DcMotor LinearActuator;
 
 
@@ -84,15 +85,15 @@ public class TeleOp_CB13353 extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "BLD");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "FRD");
         rightBackDrive = hardwareMap.get(DcMotor.class, "BRD");
-//      distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
-//      touchSensor = hardwareMap.get(TouchSensor.class, "touch");
-//      colorSensor = hardwareMap.get(ColorSensor.class, "color");
+//        distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
+//        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+//        colorSensor = hardwareMap.get(ColorSensor.class, "color");
         linearSlideLeft = hardwareMap.get(DcMotor.class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         intake = hardwareMap.get(DcMotor.class, "INTAKE");
-        pixelMover = hardwareMap.get(Servo.class, "boxmover");
-        gate = hardwareMap.get(Servo.class, "gate");
+        pixelMover = hardwareMap.get(CRServo.class, "boxmover");
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
+        gate = hardwareMap.get(Servo.class, "gate");
         //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
 
         // ########################################################################################
@@ -112,22 +113,38 @@ public class TeleOp_CB13353 extends LinearOpMode {
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        pixelMover.setDirection(Servo.Direction.REVERSE);
+        pixelMover.setDirection(DcMotorSimple.Direction.FORWARD);
         LinearActuator.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
         linearSlideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         linearSlideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        pixelMover.setPosition(0.28);
+
         waitForStart();
         runtime.reset();
 
         upspeed = 0.4;
+
+        /** VERY IMPORTANT INFORMATION!!!!!
+         * GAMEPAD1 CONTROLS AT THE MOMENT:
+         * Left Bumper and Right Bumper: Speed bars/Speed Controllers
+         * Square and Circle: Inversion buttons to flip controls
+         * Left Joystick Y & X: Movement + Strafing controls respectively
+         * Right Joystick: Turning controls
+         * GAMEPAD2 CONTROLS AT THE MOMENT:
+         * Left Stick Y - Linear Slide Movement
+         * Right Stick Y - Intake Rotation
+         * Left Bumper & Right Bumper - Pixel Box Mover Controls
+         * Dpad Left & Right - Linear Actuator(Will be changed to have failsafe included)
+         * Square and Circle - Pixel Box Mover GATE Controls for open and close
+         **/
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -143,11 +160,11 @@ public class TeleOp_CB13353 extends LinearOpMode {
                 turnspeed = 0.5;
             }
 
-            if (gamepad1.square){
+            if (gamepad1.circle){
                 inverted = -1;
             }
 
-            if(gamepad1.circle){
+            if(gamepad1.square){
                 inverted = 1;
             }
 
@@ -155,8 +172,16 @@ public class TeleOp_CB13353 extends LinearOpMode {
             linearSlideLeft.setPower(LinearSlideMovement);
             linearSlideRight.setPower(LinearSlideMovement);
 
-            double IntakeMovement = gamepad2.right_stick_y;
-            intake.setPower(IntakeMovement);
+            double intakeMovement = gamepad2.right_stick_y;
+            intake.setPower(-1 * intakeMovement);
+
+
+            if(gamepad2.left_bumper){
+                pixelMover.setPower(1);
+            } else if (gamepad2.right_bumper) {
+                pixelMover.setPower(-1);
+            }
+
 
 
             if (gamepad2.dpad_left){
@@ -167,38 +192,14 @@ public class TeleOp_CB13353 extends LinearOpMode {
                 LinearActuator.setPower(0);
             }
 
-            if (gamepad2.triangle){
-                pixelMover.setPosition(0.95);
-                telemetry.addData("Triangle is pressed", pixelMover.getPosition());
-            }
 
-            if(gamepad2.circle){
-                pixelMover.setPosition(0.28);
-                telemetry.addData("Circle is pressed", pixelMover.getPosition());
-            }
-
-            if(gamepad2.square) {
-                pixelMover.setPosition(0.50);
-                telemetry.addData("Square is pressed", pixelMover.getPosition());
-            }
-
-            if(gamepad2.dpad_up) {
+            if(gamepad2.circle) {
                 gate.setPosition(0.135);
             }
 
-            if(gamepad2.dpad_down) {
-                gate.setPosition(0.66);
+            if(gamepad2.square) {
+                gate.setPosition(0.73);
             }
-/*
-            if (linearSlideLeft.getCurrentPosition() <= 0) {
-                pixelMover.setPosition(0.28);
-            }
-            if (linearSlideRight.getCurrentPosition() <= -2000) {
-                pixelMover.setPosition(0.28);
-            }
-*/
-
-
 
 
 //            if (gamepad1.dpad_down){
@@ -215,8 +216,8 @@ public class TeleOp_CB13353 extends LinearOpMode {
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = gamepad1.left_stick_y * speed * inverted;  // Note: pushing stick forward gives negative value
-            double lateral = gamepad1.left_stick_x * -speed* inverted;
-            double yaw = gamepad1.right_stick_x * -turnspeed * inverted;
+            double lateral = gamepad1.left_stick_x * -speed * inverted;
+            double yaw = gamepad1.right_stick_x * -turnspeed;
 
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
@@ -250,8 +251,7 @@ public class TeleOp_CB13353 extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-
-
+            telemetry.addData("Gamepad2 Y Spot", gamepad2.right_stick_y);
 //            DistanceSensor();
 //
 //           ColorSensor();
@@ -259,7 +259,6 @@ public class TeleOp_CB13353 extends LinearOpMode {
             telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
             telemetry.addData("Left slide", linearSlideLeft.getCurrentPosition());
             telemetry.addData("Right slide", linearSlideRight.getCurrentPosition());
-            telemetry.addData("PixelMoverPosition", pixelMover.getPosition());
             telemetry.update();
 
         }

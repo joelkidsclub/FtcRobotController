@@ -159,11 +159,11 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
                 turnspeed = 0.5;
             }
 
-            if (gamepad1.square){
+            if (gamepad1.circle){
                 inverted = -1;
             }
 
-            if(gamepad1.circle){
+            if(gamepad1.square){
                 inverted = 1;
             }
 
@@ -192,11 +192,11 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             }
 
 
-            if(gamepad2.square) {
+            if(gamepad2.circle) {
                 gate.setPosition(0.135);
             }
 
-            if(gamepad2.circle) {
+            if(gamepad2.square) {
                 gate.setPosition(0.73);
             }
 
@@ -256,6 +256,8 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 //           ColorSensor();
 
             telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
+            telemetry.addData("Left slide", linearSlideLeft.getCurrentPosition());
+            telemetry.addData("Right slide", linearSlideRight.getCurrentPosition());
             telemetry.update();
 
         }

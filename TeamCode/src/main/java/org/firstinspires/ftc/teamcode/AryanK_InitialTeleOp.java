@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -65,10 +66,11 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
     private DcMotor linearSlideRight = null;
 
     private DcMotor intake = null;
+    private Servo gate;
 
     private double upspeed;
 
-    private Servo pixelMover;
+    private CRServo pixelMover;
     private DcMotor LinearActuator;
 
 
@@ -88,8 +90,9 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         linearSlideLeft = hardwareMap.get(DcMotor.class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         intake = hardwareMap.get(DcMotor.class, "INTAKE");
-        pixelMover = hardwareMap.get(Servo.class, "boxmover");
+        pixelMover = hardwareMap.get(CRServo.class, "boxmover");
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
+        gate = hardwareMap.get(Servo.class, "gate");
         //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
 
         // ########################################################################################
@@ -109,19 +112,37 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        pixelMover.setDirection(Servo.Direction.REVERSE);
+        pixelMover.setDirection(DcMotorSimple.Direction.FORWARD);
         LinearActuator.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        linearSlideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        linearSlideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        pixelMover.setPosition(0.1);
+
         waitForStart();
         runtime.reset();
 
         upspeed = 0.4;
+
+        /** VERY IMPORTANT INFORMATION!!!!!
+         * GAMEPAD1 CONTROLS AT THE MOMENT:
+         * Left Bumper and Right Bumper: Speed bars/Speed Controllers
+         * Square and Circle: Inversion buttons to flip controls
+         * Left Joystick Y & X: Movement + Strafing controls respectively
+         * Right Joystick: Turning controls
+         * GAMEPAD2 CONTROLS AT THE MOMENT:
+         * Left Stick Y - Linear Slide Movement
+         * Right Stick Y - Intake Rotation
+         * Left Bumper & Right Bumper - Pixel Box Mover Controls
+         * Dpad Left & Right - Linear Actuator(Will be changed to have failsafe included)
+         * Square and Circle - Pixel Box Mover GATE Controls for open and close
+         **/
 
 
         // run until the end of the match (driver presses STOP)
@@ -150,26 +171,34 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             linearSlideLeft.setPower(LinearSlideMovement);
             linearSlideRight.setPower(LinearSlideMovement);
 
-            double IntakeMovement = gamepad2.right_stick_y;
-            intake.setPower(IntakeMovement);
+            double intakeMovement = gamepad2.right_stick_y;
+            intake.setPower(-1 * intakeMovement);
 
 
-            if (gamepad2.dpad_down){
+            if(gamepad2.left_bumper){
+                pixelMover.setPower(1);
+            } else if (gamepad2.right_bumper) {
+                pixelMover.setPower(-1);
+            }
+
+
+
+            if (gamepad2.dpad_left){
                 LinearActuator.setPower(1);
-            }else if (gamepad2.dpad_up){
+            }else if (gamepad2.dpad_right){
                 LinearActuator.setPower(-1);
             }else{
                 LinearActuator.setPower(0);
             }
 
-            if (gamepad2.triangle){
-                pixelMover.setPosition(0.9);
-            }else if(gamepad2.circle){
-                pixelMover.setPosition(0.0);
-            }else if(gamepad2.square) {
-                pixelMover.setPosition(0.50);
+
+            if(gamepad2.square) {
+                gate.setPosition(0.135);
             }
 
+            if(gamepad2.circle) {
+                gate.setPosition(0.73);
+            }
 
 
 //            if (gamepad1.dpad_down){
@@ -186,8 +215,8 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = gamepad1.left_stick_y * speed * inverted;  // Note: pushing stick forward gives negative value
-            double lateral = gamepad1.left_stick_x * -speed* inverted;
-            double yaw = gamepad1.right_stick_x * -turnspeed * inverted;
+            double lateral = gamepad1.left_stick_x * -speed * inverted;
+            double yaw = gamepad1.right_stick_x * -turnspeed;
 
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
@@ -221,13 +250,12 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-
+            telemetry.addData("Gamepad2 Y Spot", gamepad2.right_stick_y);
 //            DistanceSensor();
 //
 //           ColorSensor();
 
             telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
-            telemetry.addData("PixelMoverPosition", pixelMover.getPosition());
             telemetry.update();
 
         }

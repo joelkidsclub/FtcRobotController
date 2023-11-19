@@ -21,7 +21,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -55,10 +54,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10.5, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(11, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.17;
+    public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -100,10 +99,10 @@ public class SampleMecanumDrive extends MecanumDrive {
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "FLD");
+        leftRear = hardwareMap.get(DcMotorEx.class, "BLD");
+        rightRear = hardwareMap.get(DcMotorEx.class, "BRD");
+        rightFront = hardwareMap.get(DcMotorEx.class, "FRD");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -124,8 +123,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        //Cross check one more time
+        //https://learnroadrunner.com/drive-constants.html#samplemecanumdrive-hardware-id-s
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
+
+
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
@@ -297,7 +302,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        //return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

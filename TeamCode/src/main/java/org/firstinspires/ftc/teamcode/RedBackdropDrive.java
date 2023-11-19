@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -36,7 +37,11 @@ import java.util.logging.XMLFormatter;
 @Autonomous(group = "drive")
 //@Disabled
 public class RedBackdropDrive extends LinearOpMode {
-    //april tag processor
+
+    //april tag vars
+
+
+
     private CRServo pixelMover;
 
     private DcMotor linearSlideLeft   = null;
@@ -50,7 +55,7 @@ public class RedBackdropDrive extends LinearOpMode {
     TrajectorySequence splineToBackdrop2;
     TrajectorySequence park;
     int tagId = 0;
-
+    int tagDistance = 0;
     /*
    elementPos for element position
        1 -> left
@@ -69,9 +74,13 @@ public class RedBackdropDrive extends LinearOpMode {
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
     boolean elementDetected = false;
-
+    double  driveTag = 0;        // Desired forward power/speed (-1 to +1)
+    double  strafeTag = 0;        // Desired strafe power/speed (-1 to +1)
+    double  turnTag = 0;
     @Override
     public void runOpMode() throws InterruptedException {
+
+
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -97,7 +106,7 @@ public class RedBackdropDrive extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-/*
+
         //go to tape using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(tapeTrajSequence);
 
@@ -116,9 +125,9 @@ public class RedBackdropDrive extends LinearOpMode {
         //turn on april tag processor and detect april tags
         myVisionPortal.setProcessorEnabled(aprilTag, true);
 
-        detectAprilTag();
+        centerToAprilTag();
         sleep(4000);
-*/
+
         runArm(upSpeed, targetLeft, targetRight);
         sleep(1000);
         pixelMover.setPower(1);
@@ -131,7 +140,7 @@ public class RedBackdropDrive extends LinearOpMode {
         myVisionPortal.setProcessorEnabled(aprilTag, false);
 
         //park in proper space based on object detection
-        //drive.followTrajectorySequence(park);
+        drive.followTrajectorySequence(park);
 
 
 
@@ -269,7 +278,7 @@ public class RedBackdropDrive extends LinearOpMode {
     boolean targetFound;
     private AprilTagDetection desiredTag = null;
 
-    public void detectAprilTag(){
+    public void centerToAprilTag(){
         targetFound = false;
         desiredTag  = null;
 
@@ -300,13 +309,8 @@ public class RedBackdropDrive extends LinearOpMode {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
-
             }
-        }else{
-            telemetry.addData("nothing detected", "L");
-            telemetry.update();
         }
-
 
         // Tell the driver what we see, and what to do.
         if (targetFound) {
@@ -317,6 +321,7 @@ public class RedBackdropDrive extends LinearOpMode {
             telemetry.addData("\n>","find valid target\n");
             telemetry.update();
         }
+
     }
 
     public void runArm(double speed, int leftTicks, int rightTicks){

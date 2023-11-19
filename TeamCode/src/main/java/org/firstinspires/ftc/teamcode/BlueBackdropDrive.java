@@ -28,7 +28,7 @@ import java.util.logging.XMLFormatter;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(group = "drive")
+@Autonomous(name="AAAABlueBackdropDrive", group = "drive")
 //@Disabled
 public class BlueBackdropDrive extends LinearOpMode {
     //april tag processor
@@ -58,9 +58,15 @@ public class BlueBackdropDrive extends LinearOpMode {
 
     //vars for object detection
     private static final boolean USE_WEBCAM = true;
+//    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    //Red_Cube
+    //Blue_Cube
     private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+
+    //BlueProp
+    //RedDrop
     private static final String[] LABELS = {
-            "Blue Element"
+            "BlueProp"
     };
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
@@ -161,9 +167,29 @@ public class BlueBackdropDrive extends LinearOpMode {
         // -----------------------------------------------------------------------------------------
         // TFOD Configuration
         // -----------------------------------------------------------------------------------------
-
+/*
         tfod = new TfodProcessor.Builder()
+               .build();
+*/
+
+        // Create the TensorFlow processor by using a builder.
+        tfod = new TfodProcessor.Builder()
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
                 .build();
+
 
         // -----------------------------------------------------------------------------------------
         // Camera Configuration
@@ -182,24 +208,55 @@ public class BlueBackdropDrive extends LinearOpMode {
         }
 
         while(!isStarted() && !isStopRequested()){
-            tfod.setZoom(2.0);
+            tfod.setZoom(1.0);
 
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
             double x = 0;
-            if (!tfod.getRecognitions().isEmpty()) {
-                Recognition recognition = tfod.getRecognitions().get(0);
-                x = (recognition.getLeft() + recognition.getRight()) / 2;
 
-                //telemetry.addData("object detected:", x);
-                if (x <= 250) {
+            try {
+                if (!tfod.getRecognitions().isEmpty() ) {
+                    Recognition recognition = tfod.getRecognitions().get(0);
+                    //tfod.getFreshRecognitions()
+                    x = (recognition.getLeft() + recognition.getRight()) / 2;
+
+                    /*
+                    //telemetry.addData("object detected:", x);
+                    if (x <= 250) {
+                        elementPos = 1;
+                    } else if (x > 250) { //x coord for right){
+                        elementPos = 2;
+                    } else {
+                        elementPos = 3;
+                    }
+                    */
+
+                    if (x > 115 && x < 275){
+                        elementPos = 2;
+                    } else if (x > 300){
+                        elementPos = 3;
+                    } else if (x < 115){
+                        elementPos = 1;
+                    } else {
+                        elementPos = 1;
+                    }
+
+                    telemetry.addData("finalX =>", recognition.getLeft());
+                    telemetry.addData("finalY =>", recognition.getRight());
+                    telemetry.addData("Element detected =>", elementPos);
+                } else {
                     elementPos = 1;
-                } else if (x > 250) { //x coord for right){
-                    elementPos = 2;
-                }else{
-                    elementPos = 3;
+                    telemetry.addData("Nothing found... =>","");
+                    telemetry.addData("Element detected =>", elementPos);
+                    telemetry.update();
+                    continue;
                 }
+                telemetry.update();
+
+            } catch (Exception e) {
+
             }
+
         }
     }
 

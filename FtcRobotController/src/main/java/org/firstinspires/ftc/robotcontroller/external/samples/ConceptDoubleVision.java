@@ -91,6 +91,7 @@ public class ConceptDoubleVision extends LinearOpMode {
             } else {
                 telemetry.addLine("Dpad Right to enable AprilTag");
             }
+
             telemetry.addLine();
             telemetry.addLine("----------------------------------------");
             if (myVisionPortal.getProcessorEnabled(tfod)) {
@@ -114,6 +115,13 @@ public class ConceptDoubleVision extends LinearOpMode {
             } else if (gamepad1.dpad_up) {
                 myVisionPortal.setProcessorEnabled(tfod, true);
             }
+
+            myVisionPortal.setProcessorEnabled(tfod, false);
+            myVisionPortal.setProcessorEnabled(tfod, true);
+
+            myVisionPortal.setProcessorEnabled(aprilTag, true);
+            myVisionPortal.setProcessorEnabled(aprilTag, false);
+
 
             sleep(20);
 

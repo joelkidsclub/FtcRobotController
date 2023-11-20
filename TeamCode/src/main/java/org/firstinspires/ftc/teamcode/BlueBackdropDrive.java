@@ -59,14 +59,12 @@ public class BlueBackdropDrive extends LinearOpMode {
     //vars for object detection
     private static final boolean USE_WEBCAM = true;
 //    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
-    //Red_Cube
-    //Blue_Cube
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    //Red_Cube.tflite => RedProp
+    //Blue_Cube.tflite => BlueProp
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
 
-    //BlueProp
-    //RedDrop
     private static final String[] LABELS = {
-            "BlueProp"
+            "RedProp"
     };
     private TfodProcessor tfod;
     private VisionPortal visionPortal;

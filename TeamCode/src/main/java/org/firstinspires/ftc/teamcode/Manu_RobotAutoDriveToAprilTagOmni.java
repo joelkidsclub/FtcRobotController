@@ -80,7 +80,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-@Autonomous(name="Omni Drive To AprilTag", group = "Concept")
+@Autonomous(name="Omni Drive To AprilTag", group = "xConcept")
 //@Disabled
 public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {

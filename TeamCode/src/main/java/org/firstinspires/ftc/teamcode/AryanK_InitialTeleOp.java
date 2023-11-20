@@ -124,7 +124,6 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
         linearSlideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         linearSlideRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-
         waitForStart();
         runtime.reset();
 

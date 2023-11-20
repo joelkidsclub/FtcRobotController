@@ -56,15 +56,12 @@ public class DetectElementBlue extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
-    //    private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu_8.tflite";
-//    private static final String TFOD_MODEL_ASSET = "ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu_8.tflite";
-    // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
-    // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
-    // Define the labels recognized in the model for TFOD (must be in training order!)
+    //private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
+    //Blue_Cube.tflite => BlueProp
+    //Red_Cube.tflite => RedDrop
     private static final String[] LABELS = {
-            "Cube"
+            "RedProp"
     };
 
     /**
@@ -81,7 +78,7 @@ public class DetectElementBlue extends LinearOpMode {
     public void runOpMode() {
 
         initTfod();
-        tfod.setZoom(2.0);
+        tfod.setZoom(1.10);
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -129,16 +126,13 @@ public class DetectElementBlue extends LinearOpMode {
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
                 .setModelAssetName(TFOD_MODEL_ASSET)
                 //.setModelFileName(TFOD_MODEL_FILE)
-
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
                 .setModelLabels(LABELS)
                 .setIsModelTensorFlow2(true)
-
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
                 //.setModelAspectRatio(16.0 / 9.0)
-
                 .build();
 
         // Create the vision portal by using a builder.
@@ -193,9 +187,11 @@ public class DetectElementBlue extends LinearOpMode {
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
             telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            telemetry.addData("Image => ", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position =>", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size => ", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            //telemetry.addData("- X =>",(recognition.getLeft() + recognition.getRight()) / 2);
+
         }   // end for() loop
 
     }   // end method telemetryTfod()

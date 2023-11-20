@@ -40,8 +40,6 @@ public class RedBackdropDrive extends LinearOpMode {
 
     //april tag vars
 
-
-
     private CRServo pixelMover;
 
     private DcMotor linearSlideLeft   = null;

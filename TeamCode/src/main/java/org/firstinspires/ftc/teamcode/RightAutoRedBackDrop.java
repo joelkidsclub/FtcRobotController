@@ -25,7 +25,7 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAARightAutoRedBackDrop", group = "drive")
+@Autonomous(name="AutoRightRedBackDrop", group = "drive")
 //@Disabled
 public class RightAutoRedBackDrop extends LinearOpMode {
     /*
@@ -118,7 +118,7 @@ public class RightAutoRedBackDrop extends LinearOpMode {
 
 
         initialize();
-        elementPos = 1;
+        elementPos = 2;
         //pixelDropped = false;
 
         if (elementPos == 1) {
@@ -246,7 +246,7 @@ public class RightAutoRedBackDrop extends LinearOpMode {
                     step = 5;
                     telemetry.addData("STEP 5: STATE_POS2_STEP1: currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_POS2_STEP2;
+                        currentState = State.STATE_POS2_STEP2;//STATE_POS2_STEP2
                         telemetry.addData("STEP 5: STATE_POS2_STEP1: nextState => ", currentState);
                     }
                     drive.followTrajectory(traj_STATE_POS2_STEP1);//back(5)
@@ -519,7 +519,7 @@ public class RightAutoRedBackDrop extends LinearOpMode {
 
         while(!isStarted() && !isStopRequested()){
             initTfod();
-            tfod.setZoom(2.0);
+            tfod.setZoom(1.0);
 
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)

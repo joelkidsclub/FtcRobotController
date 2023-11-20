@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAARightAutoRedWing", group = "drive")
+@Autonomous(name="AutoRightRedWing", group = "drive")
 //@Disabled
 public class RightAutoRedWing extends LinearOpMode {
     /*

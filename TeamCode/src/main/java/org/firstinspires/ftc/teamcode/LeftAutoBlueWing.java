@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAALeftAutoBlueWing", group = "drive")
+@Autonomous(name="AutoLeftBlueWing", group = "drive")
 //@Disabled
 
 public class LeftAutoBlueWing extends LinearOpMode {

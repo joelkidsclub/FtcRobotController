@@ -28,7 +28,7 @@ import java.util.logging.XMLFormatter;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAAABlueBackdropDrive", group = "drive")
+@Autonomous(name="AutoBlueBackdropDrive", group = "drive")
 //@Disabled
 public class BlueBackdropDrive extends LinearOpMode {
     //april tag processor
@@ -231,11 +231,11 @@ public class BlueBackdropDrive extends LinearOpMode {
                     }
                     */
 
-                    if (x > 115 && x < 275){
+                    if (x > 250 && x < 475){
                         elementPos = 2;
-                    } else if (x > 300){
+                    } else if (x > 475){
                         elementPos = 3;
-                    } else if (x < 115){
+                    } else if (x < 250){
                         elementPos = 1;
                     } else {
                         elementPos = 1;
@@ -243,6 +243,7 @@ public class BlueBackdropDrive extends LinearOpMode {
 
                     telemetry.addData("finalX =>", recognition.getLeft());
                     telemetry.addData("finalY =>", recognition.getRight());
+                    telemetry.addData("X Calculated =>", x);
                     telemetry.addData("Element detected =>", elementPos);
                 } else {
                     elementPos = 1;

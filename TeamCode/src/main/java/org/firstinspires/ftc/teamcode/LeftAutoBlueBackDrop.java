@@ -25,7 +25,7 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAALeftAutoBlueBackDrop", group = "drive")
+@Autonomous(name="AutoLeftBlueBackDrop", group = "drive")
 //@Disabled
 public class LeftAutoBlueBackDrop extends LinearOpMode {
     /*

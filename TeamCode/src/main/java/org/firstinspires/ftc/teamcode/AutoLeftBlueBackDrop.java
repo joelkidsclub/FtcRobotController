@@ -7,6 +7,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -43,7 +46,16 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     SampleMecanumDrive drive;
-    private Servo pixelMover;
+    private DistanceSensor distanceSensor;
+    private CRServo pixelMover;
+    private Servo gate;
+    private Servo pixelDropper;
+    private DcMotor linearSlideLeft   = null;
+    private DcMotor linearSlideRight  = null;
+    static final int targetLeft = 771;
+    static final int targetRight = 790;
+    private double upSpeed = .4;
+
     //boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -57,7 +69,6 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
      */
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
-
     /**
      * The variable to store our instance of the vision portal.
      */
@@ -120,20 +131,23 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     Trajectory traj_STATE_POS3_STEP4;
     AutoLeftBlueBackDrop.State currentState = AutoLeftBlueBackDrop.State.STATE_INITIAL;
     int ver = 1;
-
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
     @Override
     public void runOpMode() throws InterruptedException {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
+        pixelDropper = hardwareMap.get(Servo .class, "pixeldrop");
+        pixelMover = hardwareMap.get(CRServo .class, "boxmover");
+        linearSlideLeft  = hardwareMap.get(DcMotor .class, "LLS");
+        linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
+        gate = hardwareMap.get(Servo.class, "gate");
+        distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
 
-
         initialize();
-        elementPos = 2;
-        //pixelDropped = false;
+        elementPos = 2; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -150,6 +164,10 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         telemetry.addData("Element position =>", elementPos);
         telemetry.addData("Desired tag =>", elementPos);
         telemetry.update();
+
+        runArm(upSpeed, 138, 136);
+        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         currentState = State.STATE_INITIAL;
 
@@ -226,9 +244,9 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         currentState = State.STATE_POS1_STEP4;
                         telemetry.addData("STEP 13: STATE_POS1_STEP3: nextState => ", currentState);
                     }
-                    pixelMover.setPosition(0.00);
+                    pixelDropper.setPosition(0.00);
                     sleep(1500);
-                    pixelMover.setPosition(45.00);
+                    pixelDropper.setPosition(45.00);
 
                     drive.followTrajectory(traj_STATE_POS1_STEP2);
                     telemetry.update();
@@ -293,9 +311,9 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         currentState = State.STATE_POS2_STEP3;
                         telemetry.addData("STEP 7: STATE_POS2_STEP2: nextState => ", currentState);
                     }
-                    pixelMover.setPosition(0.00);
+                    pixelDropper.setPosition(0.00);
                     sleep(1500);
-                    pixelMover.setPosition(45.00);
+                    pixelDropper.setPosition(45.00);
                     drive.followTrajectory(traj_STATE_POS2_STEP2);//forward(5)
                     telemetry.update();
                     break;
@@ -363,9 +381,9 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     break;
                 case STATE_POS3_STEP2:
                     step =5;
-                    pixelMover.setPosition(0.00);
+                    pixelDropper.setPosition(0.00);
                     sleep(1500);
-                    pixelMover.setPosition(45.00);
+                    pixelDropper.setPosition(45.00);
 
                     telemetry.addData("STEP 5: STATE_POS3_STEP2: currentState => ", currentState);
                     currentState = State.STATE_POS_REALIGN;//STATE_POS1_STEP22;
@@ -420,9 +438,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     }   // end method initTfod()
 
     public void initialize(){
-        pixelMover = hardwareMap.get(Servo .class, "pixeldrop");
-
-        pixelMover.setPosition(45.00);
+        pixelDropper.setPosition(45.00);
 
         // Create the TensorFlow processor by using a builder.
         // -----------------------------------------------------------------------------------------
@@ -671,5 +687,51 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
 
     }   // end method telemetryAprilTag()
 
+    public void runArm(double speed, int leftTicks, int rightTicks){
+        linearSlideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        linearSlideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
+        linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+            linearSlideLeft.setTargetPosition(leftTicks);
+            linearSlideRight.setTargetPosition(rightTicks);
+
+            // Turn On RUN_TO_POSITION
+            linearSlideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            linearSlideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            linearSlideLeft.setPower(speed);
+            linearSlideRight.setPower(speed);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() && (linearSlideLeft.isBusy() && linearSlideRight.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  " %7d :%7d", targetLeft,  targetRight);
+                telemetry.addData("Currently at",  " at %7d :%7d",
+                        linearSlideLeft.getCurrentPosition(), linearSlideRight.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            linearSlideLeft.setPower(0);
+            linearSlideRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            linearSlideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(250);   // optional pause after each move.
+        }
+    }
 
 } //End class

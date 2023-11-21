@@ -95,8 +95,6 @@ public class RedBackdropDrive extends LinearOpMode {
 
         pixelMover.setDirection(CRServo.Direction.REVERSE);
 
-
-
         //method for arm and stuff
 
         //will run while the code hasn't been run

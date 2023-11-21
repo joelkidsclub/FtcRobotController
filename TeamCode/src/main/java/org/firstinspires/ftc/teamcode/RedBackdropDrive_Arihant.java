@@ -126,7 +126,7 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
         perfectBack3 = drive.trajectoryBuilder(splineToBackdrop2.end())
                 .back(perfectDistance)
                 .build();
-        double newDistance =
+        //double newDistance =
 
         drive.followTrajectory(perfectBack3);
 

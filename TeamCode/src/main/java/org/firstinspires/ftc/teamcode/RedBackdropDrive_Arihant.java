@@ -122,10 +122,11 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
 
         //spline to the backdrop using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(splineToBackdrop2);
-
+        double perfectDistance = distanceSensor.getDistance(DistanceUnit.INCH) - 3.5;
         perfectBack3 = drive.trajectoryBuilder(splineToBackdrop2.end())
-                .back(distanceSensor.getDistance(DistanceUnit.INCH) - 3.5)
+                .back(perfectDistance)
                 .build();
+        double newDistance =
 
         drive.followTrajectory(perfectBack3);
 

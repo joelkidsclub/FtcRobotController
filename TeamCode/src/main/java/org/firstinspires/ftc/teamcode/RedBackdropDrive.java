@@ -13,12 +13,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -34,13 +36,14 @@ import java.util.logging.XMLFormatter;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(group = "drive")
+@Autonomous(name="AARedBackdropDrive", group = "drive")
 //@Disabled
 public class RedBackdropDrive extends LinearOpMode {
 
     //april tag vars
-
+    private DistanceSensor distanceSensor;
     private CRServo pixelMover;
+    private Servo gate;
 
     private DcMotor linearSlideLeft   = null;
     private DcMotor linearSlideRight  = null;
@@ -51,7 +54,8 @@ public class RedBackdropDrive extends LinearOpMode {
 
     TrajectorySequence tapeTrajSequence;
     TrajectorySequence splineToBackdrop2;
-    TrajectorySequence park;
+    TrajectoryBuilder perfectBackdrop;
+    TrajectoryBuilder park;
     int tagId = 0;
     int tagDistance = 0;
     /*
@@ -65,9 +69,9 @@ public class RedBackdropDrive extends LinearOpMode {
 
     //vars for object detection
     private static final boolean USE_WEBCAM = true;
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
     private static final String[] LABELS = {
-            "Blue Element"
+            "RedProp"
     };
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
@@ -86,16 +90,20 @@ public class RedBackdropDrive extends LinearOpMode {
         linearSlideLeft  = hardwareMap.get(DcMotor.class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         pixelMover = hardwareMap.get(CRServo.class, "boxmover");
+        gate = hardwareMap.get(Servo.class, "gate");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
 
-        linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
-        linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         pixelMover.setDirection(CRServo.Direction.REVERSE);
+
 
 
         //method for arm and stuff
 
         //will run while the code hasn't been run
         initialize();
+
+        //USE ONLY FOR TESTING, overrides element position to hard set value
+        elementPos = 3;
 
         telemetry.addData("element position", elementPos);
         telemetry.update();
@@ -104,7 +112,9 @@ public class RedBackdropDrive extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-
+        runArm(upSpeed, 138, 136);
+        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //go to tape using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(tapeTrajSequence);
 
@@ -124,21 +134,28 @@ public class RedBackdropDrive extends LinearOpMode {
         myVisionPortal.setProcessorEnabled(aprilTag, true);
 
         centerToAprilTag();
-        sleep(4000);
+        sleep(1000);
 
-        runArm(upSpeed, targetLeft, targetRight);
+        telemetry.addData("distance:", distanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.update();
+
+
+        runArm(upSpeed, targetLeft-138, targetRight-136);
         sleep(1000);
         pixelMover.setPower(1);
-        sleep(4000);
+        sleep(2000);
+        gate.setPosition(.135);
+        sleep(3000);
+        gate.setPosition(.73);
         pixelMover.setPower(-1);
         sleep(2000);
-        runArm(upSpeed, -targetLeft, -targetRight);
+        //runArm(upSpeed, -(targetLeft-138) , -(targetRight-136));
 
         //turn off april tag processor
         myVisionPortal.setProcessorEnabled(aprilTag, false);
 
         //park in proper space based on object detection
-        drive.followTrajectorySequence(park);
+        //drive.followTrajectorySequence(park);
 
 
 
@@ -159,13 +176,14 @@ public class RedBackdropDrive extends LinearOpMode {
                 xValBackdrop = 18;
                 tapeTrajSequence = drive.trajectorySequenceBuilder(new Pose2d())
                         .back(27)
-                        .turn(Math.toRadians(-90))
+                        .turn(Math.toRadians(90))
                         .back(4)
                         .build();
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(2)
-                        .splineToLinearHeading(new Pose2d(-19, 29.5, Math.toRadians(0)), Math.toRadians(180))
+                        .strafeRight(10)
+                        .splineToConstantHeading(new Vector2d(-31, 39.5), Math.toRadians(0))
                         .build();
                 //set servo back to 0
                 break;
@@ -179,7 +197,7 @@ public class RedBackdropDrive extends LinearOpMode {
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(5)
-                        .splineToLinearHeading(new Pose2d(-25, 29.5, Math.toRadians(90)), Math.toRadians(180))
+                        .splineToLinearHeading(new Pose2d(-25, 39.5, Math.toRadians(90)), Math.toRadians(0))
                         .build();
                 //set servo back to 0
                 break;
@@ -187,20 +205,24 @@ public class RedBackdropDrive extends LinearOpMode {
                 xValBackdrop = 35;
                 tapeTrajSequence = drive.trajectorySequenceBuilder(new Pose2d())
                         .back(27)
-                        .turn(Math.toRadians(90))
-                        .back(4)
+                        .turn(Math.toRadians(-90))
+                        .back(2)
                         .build();
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
-                        .forward(2)
-                        .strafeRight(10)
-                        .splineToConstantHeading(new Vector2d(-31, 29.5), Math.toRadians(180))
+                        .forward(4)
+                        .strafeLeft(20)
+                        .splineToConstantHeading(new Vector2d(-20, 32), Math.toRadians(180))
                         .build();
+
                 //set servo back to 0
                 break;
 
-        }
 
+                //.splineToConstantHeading(new Vector2d(-20, 34.5), Math.toRadians(180))
+
+        }
+        /*
         if(elementPos < 3){
             park = drive.trajectorySequenceBuilder(splineToBackdrop2.end())
                     .lineToConstantHeading(new Vector2d(-2, -29.5))
@@ -212,6 +234,11 @@ public class RedBackdropDrive extends LinearOpMode {
                     .back(15)
                     .build();
         }
+        */
+        park = drive.trajectoryBuilder(splineToBackdrop2.end())
+                .strafeLeft(20);
+
+
     }
     public void initialize(){
         //making april tag processor
@@ -248,7 +275,7 @@ public class RedBackdropDrive extends LinearOpMode {
 
         while(!isStarted() && !isStopRequested()){
             myVisionPortal.setProcessorEnabled(tfod, true);
-            tfod.setZoom(2.0);
+            tfod.setZoom(2);
 
 
             //sets element position depending on the position of the detected element
@@ -328,6 +355,9 @@ public class RedBackdropDrive extends LinearOpMode {
 
         linearSlideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
+        linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
             linearSlideLeft.setTargetPosition(leftTicks);
@@ -350,7 +380,7 @@ public class RedBackdropDrive extends LinearOpMode {
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d", targetLeft,  targetRight);
                 telemetry.addData("Currently at",  " at %7d :%7d",
-                        linearSlideLeft.getCurrentPosition(), linearSlideRight.getCurrentPosition());
+                linearSlideLeft.getCurrentPosition(), linearSlideRight.getCurrentPosition());
                 telemetry.update();
             }
 

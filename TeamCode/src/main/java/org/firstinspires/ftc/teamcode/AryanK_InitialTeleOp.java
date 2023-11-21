@@ -193,6 +193,7 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 
             if(gamepad2.circle) {
                 gate.setPosition(0.135);
+
             }
 
             if(gamepad2.square) {

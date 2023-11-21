@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -50,18 +49,18 @@ import java.util.List;
  */
 @TeleOp(name = "DetectElementBlue", group = "Concept")
 //@Disabled
-public class DetectElementBlue extends LinearOpMode {
+public class DetectElementRed extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
     //private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
     //Blue_Cube.tflite => BlueProp
     //Red_Cube.tflite => RedDrop
     private static final String[] LABELS = {
-            "BlueProp"
+            "RedProp"
     };
 
     /**

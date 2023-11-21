@@ -49,7 +49,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
     private static final String[] LABELS = {
-            "Red Element"
+            "RedProp"
     };
 
     /**

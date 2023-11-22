@@ -32,7 +32,7 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AARedBackdropDrive", group = "drive")
+@Autonomous(name="Arihant_RedBackdropDrive", group = "drive")
 //@Disabled
 public class RedBackdropDrive_Arihant extends LinearOpMode {
 

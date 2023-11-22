@@ -28,9 +28,9 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AutoLeftBlueBackDrop", group = "drive")
+@Autonomous(name="AAAAutoLeftBlueBackDrop", group = "drive")
 //@Disabled
-public class AutoLeftBlueBackDrop extends LinearOpMode {
+public class AutoLeftBlueBackDrop_Nikhil extends LinearOpMode {
     /*
     elementPos for element position
        1 -> left
@@ -79,6 +79,10 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     enum State {
         STATE_ZERO,
         STATE_INITIAL,
+        STATE_LEFT_STEP1,
+        STATE_LEFT_STEP2,
+        STATE_LEFT_STEP3,
+        STATE_LEFT_STEP4,
         STATE_STEP1_BACK25,
         STATE_STEP1_BACK32,
         STATE_CHECK_POS,
@@ -110,7 +114,12 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         STATE_PARK,//
         IDLE//
     }
-    Trajectory traj_STATE_STEP1_BACK25;
+
+    Trajectory traj_INITIAL;
+    Trajectory traj_STATE_LEFT_STEP1;
+    Trajectory traj_STATE_LEFT_STEP2;
+    Trajectory traj_STATE_LEFT_STEP3;
+    Trajectory traj_STATE_LEFT_STEP4;
     Trajectory traj_STATE_STEP1_BACK32;
     Trajectory traj_STATE_POS1_STEP1;
     Trajectory traj_STATE_POS1_STEP11;
@@ -129,7 +138,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     Trajectory traj_STATE_POS3_STEP2;
     Trajectory traj_STATE_POS3_STEP3;
     Trajectory traj_STATE_POS3_STEP4;
-    AutoLeftBlueBackDrop.State currentState = AutoLeftBlueBackDrop.State.STATE_INITIAL;
+    AutoLeftBlueBackDrop_Nikhil.State currentState = AutoLeftBlueBackDrop_Nikhil.State.STATE_INITIAL;
     int ver = 1;
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
@@ -147,7 +156,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
 
         initialize();
-        elementPos = 2; //Hardcoded for testing
+        elementPos = 1; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -183,15 +192,106 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     step = 0;
                     telemetry.addData("STEP 0: STATE_INITIAL - drive.isBusy() ", drive.isBusy());
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_STEP1_BACK25;
+                        currentState = State.STATE_LEFT_STEP1;
                         //drive.followTrajectoryAsync(traj_Drive_To_Low_Junction);
-
                         telemetry.addData("STEP 1: STATE_INITIAL - ", "...");
                         telemetry.update();
                     }
                     visionPortal.setProcessorEnabled(tfod, true);
                     visionPortal.setProcessorEnabled(aprilTag, false);
                     break;
+
+                case STATE_LEFT_STEP1:
+                    telemetry.addData("currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_STEP2;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+
+                    drive.followTrajectory(traj_INITIAL);
+                    drive.followTrajectory(traj_STATE_LEFT_STEP1);
+
+                case STATE_LEFT_STEP2:
+                    telemetry.addData("currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_STEP3;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+
+                    drive.followTrajectory(traj_STATE_LEFT_STEP2);
+                    pixelDropper.setPosition(45.00);
+                    sleep(1500);
+                    //pixelDropper.setPosition(45.00);
+
+                case STATE_LEFT_STEP3:
+                    telemetry.addData("currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_STEP4;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+
+                    drive.followTrajectory(traj_STATE_LEFT_STEP3);
+
+
+                    break;
+
+                case STATE_LEFT_STEP4:
+                    telemetry.addData("currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_POS_REALIGN;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+
+                    drive.followTrajectory(traj_STATE_LEFT_STEP4);
+
+                    runArm(upSpeed, targetLeft-138, targetRight-136);
+                    sleep(1000);
+                    pixelMover.setPower(1);
+                    //sleep(2000);
+                    gate.setPosition(.135);
+                    sleep(1000);
+                    gate.setPosition(1);
+                    sleep(1000);
+                    pixelMover.setPower(-1);
+                    sleep(1000);
+                    break;
+                case STATE_POS_REALIGN:
+                    step = 98;
+                    telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
+
+                    visionPortal.setProcessorEnabled(tfod, false);
+                    visionPortal.setProcessorEnabled(aprilTag, true);
+                    telemetry.update();
+                    detectAprilTag();
+                    telemetryAprilTag();
+
+                    if (!drive.isBusy() && targetFound) {
+                        currentState = State.STATE_PARK;
+                        telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
+                        telemetry.update();
+                    }
+                    break;
+
+                case STATE_PARK:
+                    step = 99;
+                    telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
+
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
+                        telemetry.addData("STEP 99: STATE_PARK", "...");
+                    }
+                    telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
+                    telemetry.update();
+                    break;
+                case IDLE:
+                    step = 100;
+                    //Do Nothing
+                    done = true;
+                    telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
+                    telemetry.update();
+                    break;
+
+               /*
                 case STATE_STEP1_BACK25:
                     step = 1;
                     telemetry.addData("STEP 1: STATE_STEP1_BACK25: currentState => ", currentState);
@@ -392,41 +492,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_POS3_STEP2);//back(2)
                     telemetry.update();
                     break;
-                case STATE_POS_REALIGN:
-                    step = 98;
-                    telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
-
-                    visionPortal.setProcessorEnabled(tfod, false);
-                    visionPortal.setProcessorEnabled(aprilTag, true);
-                    telemetry.update();
-                    detectAprilTag();
-                    telemetryAprilTag();
-
-                    if (!drive.isBusy() && targetFound) {
-                        currentState = State.STATE_PARK;
-                        telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
-                        telemetry.update();
-                    }
-
-                    break;
-                case STATE_PARK:
-                    step = 99;
-                    telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
-
-                    if (!drive.isBusy()) {
-                        currentState = State.IDLE;
-                        telemetry.addData("STEP 99: STATE_PARK", "...");
-                    }
-                    telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
-                    telemetry.update();
-                    break;
-                case IDLE:
-                    step = 100;
-                    //Do Nothing
-                    done = true;
-                    telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
-                    telemetry.update();
-                    break;
+*/
 
             } //End switch
         } //End while
@@ -439,7 +505,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     }   // end method initTfod()
 
     public void initialize(){
-        pixelDropper.setPosition(45.00);
+        pixelDropper.setPosition(0);
 
         // Create the TensorFlow processor by using a builder.
         // -----------------------------------------------------------------------------------------
@@ -491,8 +557,29 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
 
         long timeOut = (long) 0.1;
 
+
+        traj_INITIAL = drive.trajectoryBuilder(new Pose2d(0,0,0))
+                .back(2)
+                .build();
+        traj_STATE_LEFT_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
+                .strafeRight(13)
+                .build();
+        traj_STATE_LEFT_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_STEP1.end())
+                .back(15)
+                .build();
+        traj_STATE_LEFT_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_STEP2.end())
+                .forward(5)
+                .build();
+        traj_STATE_LEFT_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_STEP3.end())
+                .lineToLinearHeading(new Pose2d(-20,-39.5, Math.toRadians(90)))
+                .build();
+
+
+
+
         //Trajectory definitions
         //Move back 25
+        /*
         traj_STATE_STEP1_BACK25 = drive.trajectoryBuilder(new Pose2d(0,0,0))
                 .back(25)
                 .build();
@@ -560,7 +647,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         traj_STATE_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_POS1_STEP3.end())
                 .strafeRight(15)
                 .build();
-
+*/
         //Drop Pixel
         //traj_STATE_POS2_STEP2
         //traj_STATE_POS2_STEP3

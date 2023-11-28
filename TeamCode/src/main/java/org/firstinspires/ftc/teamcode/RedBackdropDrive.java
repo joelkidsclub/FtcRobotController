@@ -44,6 +44,7 @@ public class RedBackdropDrive extends LinearOpMode {
     private DistanceSensor distanceSensor;
     private CRServo pixelMover;
     private Servo gate;
+    private Servo pixelDropper;
 
     private DcMotor linearSlideLeft   = null;
     private DcMotor linearSlideRight  = null;
@@ -75,6 +76,7 @@ public class RedBackdropDrive extends LinearOpMode {
     };
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
+    Trajectory perfectBack;
     boolean elementDetected = false;
     double  driveTag = 0;        // Desired forward power/speed (-1 to +1)
     double  strafeTag = 0;        // Desired strafe power/speed (-1 to +1)
@@ -92,6 +94,7 @@ public class RedBackdropDrive extends LinearOpMode {
         pixelMover = hardwareMap.get(CRServo.class, "boxmover");
         gate = hardwareMap.get(Servo.class, "gate");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
+        pixelDropper = hardwareMap.get(Servo.class, "pixeldrop");
 
         pixelMover.setDirection(CRServo.Direction.REVERSE);
 
@@ -115,6 +118,9 @@ public class RedBackdropDrive extends LinearOpMode {
         linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //go to tape using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(tapeTrajSequence);
+        sleep(500);
+        pixelDropper.setPosition(45.00);
+        sleep(500);
 
         //turn off the tfod processor
         myVisionPortal.setProcessorEnabled(tfod, false);
@@ -124,6 +130,8 @@ public class RedBackdropDrive extends LinearOpMode {
 
         //spline to the backdrop using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(splineToBackdrop2);
+        drive.followTrajectory(perfectBack);
+
 
         //set pixel servo to original position
         //servoPixel.setPosition(0);
@@ -140,7 +148,11 @@ public class RedBackdropDrive extends LinearOpMode {
 
         runArm(upSpeed, targetLeft-138, targetRight-136);
         sleep(1000);
-        pixelMover.setPower(1);
+        try {
+            pixelMover.setPower(1);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         sleep(2000);
         gate.setPosition(.135);
         sleep(3000);
@@ -180,8 +192,7 @@ public class RedBackdropDrive extends LinearOpMode {
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(2)
-                        .strafeRight(10)
-                        .splineToConstantHeading(new Vector2d(-31, 39.5), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-32, 39.5), Math.toRadians(180))
                         .build();
                 //set servo back to 0
                 break;
@@ -210,10 +221,14 @@ public class RedBackdropDrive extends LinearOpMode {
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(4)
                         .strafeLeft(20)
-                        .splineToConstantHeading(new Vector2d(-20, 32), Math.toRadians(180))
+                        .splineToLinearHeading(new Pose2d(-20, 32, Math.toRadians(0)), Math.toRadians(180))
                         .build();
 
                 //set servo back to 0
+                perfectBack = drive.trajectoryBuilder(splineToBackdrop2.end())
+                        .back(distanceSensor.getDistance(DistanceUnit.INCH) - 3.5)
+                        .build();
+
                 break;
 
 

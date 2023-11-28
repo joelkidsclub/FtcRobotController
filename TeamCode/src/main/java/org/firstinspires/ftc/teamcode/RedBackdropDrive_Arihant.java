@@ -50,6 +50,7 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
 
     TrajectorySequence tapeTrajSequence;
     TrajectorySequence splineToBackdrop2;
+    Trajectory strafeToPark4;
     TrajectoryBuilder park;
     int tagId = 0;
     int tagDistance = 0;
@@ -71,6 +72,7 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
     Trajectory perfectBack3;
+    Trajectory perfecterBack3;
     boolean elementDetected = false;
     double  driveTag = 0;        // Desired forward power/speed (-1 to +1)
     double  strafeTag = 0;        // Desired strafe power/speed (-1 to +1)
@@ -107,10 +109,10 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
         initTraj(drive, elementPos);
 
         if (isStopRequested()) return;
-
-        runArm(upSpeed, 138, 136);
         linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        runArm(upSpeed, 138, 136);
+
         //go to tape using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(tapeTrajSequence);
 
@@ -122,13 +124,27 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
 
         //spline to the backdrop using trajectories from switch case (check initialize)
         drive.followTrajectorySequence(splineToBackdrop2);
-        double perfectDistance = distanceSensor.getDistance(DistanceUnit.INCH) - 3.5;
+        double desiredDistance = 3.75;
+
+        double perfectDistance = distanceSensor.getDistance(DistanceUnit.INCH) - desiredDistance;
         perfectBack3 = drive.trajectoryBuilder(splineToBackdrop2.end())
                 .back(perfectDistance)
                 .build();
-        //double newDistance =
+
+        double newYPosition = 32 + desiredDistance;
 
         drive.followTrajectory(perfectBack3);
+        //if too close despite perfecting, do it again
+        if(distanceSensor.getDistance((DistanceUnit.INCH)) < 3.6){
+            perfectDistance = distanceSensor.getDistance(DistanceUnit.INCH) - desiredDistance;
+            perfecterBack3 = drive.trajectoryBuilder(perfectBack3.end())
+                    // doing -.05 in case it goes too far
+                    .forward(Math.abs(perfectDistance)-.05)
+                    .build();
+            //shouldn't matter in terms of pose and stuff
+            drive.followTrajectory(perfecterBack3);
+        }
+
 
 
         //set pixel servo to original position
@@ -149,10 +165,15 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
         pixelMover.setPower(1);
         sleep(2000);
         gate.setPosition(.135);
-        sleep(3000);
-        gate.setPosition(.73);
+        sleep(1500);
+        //gate.setPosition(.73);
         pixelMover.setPower(-1);
         sleep(2000);
+
+        strafeToPark4 = drive.trajectoryBuilder(perfectBack3.end())
+                .lineToConstantHeading(new Vector2d(3, newYPosition))
+                .build();
+        drive.followTrajectory(strafeToPark4);
         //runArm(upSpeed, -(targetLeft-138) , -(targetRight-136));
 
         //turn off april tag processor
@@ -177,7 +198,6 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
     private void initTraj(SampleMecanumDrive drive, int elementPosition){
         switch(elementPosition){
             case 1:
-                xValBackdrop = 18;
                 tapeTrajSequence = drive.trajectorySequenceBuilder(new Pose2d())
                         .back(27)
                         .turn(Math.toRadians(90))
@@ -186,27 +206,24 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(2)
-                        .strafeRight(10)
-                        .splineToConstantHeading(new Vector2d(-31, 39.5), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-32, 32, Math.toRadians(0)), Math.toRadians(180))
                         .build();
                 //set servo back to 0
                 break;
             // -6 x val change per april tag
 
             case 2:
-                xValBackdrop = 28;
                 tapeTrajSequence = drive.trajectorySequenceBuilder(new Pose2d())
                         .back(30)
                         .build();
                 //drop pixel
                 splineToBackdrop2 = drive.trajectorySequenceBuilder(tapeTrajSequence.end())
                         .forward(5)
-                        .splineToLinearHeading(new Pose2d(-25, 39.5, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-26, 32, Math.toRadians(90)), Math.toRadians(180))
                         .build();
                 //set servo back to 0
                 break;
             case 3:
-                xValBackdrop = 35;
                 tapeTrajSequence = drive.trajectorySequenceBuilder(new Pose2d())
                         .back(27)
                         .turn(Math.toRadians(-90))
@@ -219,9 +236,6 @@ public class RedBackdropDrive_Arihant extends LinearOpMode {
                         .splineToConstantHeading(new Vector2d(-20, 32), Math.toRadians(180))
                         .build();
                 //perfect back
-
-
-
                 break;
 
 

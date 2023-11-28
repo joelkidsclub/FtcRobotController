@@ -37,6 +37,7 @@ public class AutoLeftBlueBackDrop_Nikhil extends LinearOpMode {
        2 -> mid
        3 -> right
     */
+
     int elementPos = 2; //Default to middle blue
     int targetTagBlue = 2;
     int targetTagRed = 2;

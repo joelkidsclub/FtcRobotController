@@ -415,6 +415,7 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
                     sleep(500);
                 case STATE_LEFT_POS3_STEP2:
+
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP3;

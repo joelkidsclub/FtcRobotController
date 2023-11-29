@@ -208,7 +208,7 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                     visionPortal.setProcessorEnabled(tfod, true);
                     visionPortal.setProcessorEnabled(aprilTag, false);
                     break;
-/*
+
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -400,9 +400,8 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP7);
                     sleep(1500);
-*/
-                // Position 3
 
+                // Position 3
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -483,6 +482,7 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                     pixelMover.setPower(1);
                     sleep(1000);
                     sleep(1500);
+
                 case STATE_LEFT_POS3_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {

@@ -182,15 +182,6 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 
 
 
-            if (gamepad2.dpad_left){
-                LinearActuator.setPower(1);
-            }else if (gamepad2.dpad_right){
-                LinearActuator.setPower(-1);
-            }else{
-                LinearActuator.setPower(0);
-            }
-
-
             if(gamepad2.circle) {
                 gate.setPosition(0.135);
 
@@ -198,6 +189,12 @@ public class AryanK_InitialTeleOp extends LinearOpMode {
 
             if(gamepad2.square) {
                 gate.setPosition(0.73);
+            }
+
+            if(gamepad2.dpad_right) {
+
+                linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
 

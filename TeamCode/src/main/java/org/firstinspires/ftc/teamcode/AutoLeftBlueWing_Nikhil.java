@@ -617,7 +617,6 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                 .lineToLinearHeading(traj_STATE_LEFT_POS2_STEP3.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
                 .build();
 
-
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3b.end())
                 .back(101.4)
                 .build();

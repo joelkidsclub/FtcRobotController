@@ -48,7 +48,7 @@ public class CS13353TeleOp extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private CRServo droneServo;
+    private Servo droneServo;
 
 /*
     private DistanceSensor distanceSensor;
@@ -93,7 +93,8 @@ public class CS13353TeleOp extends LinearOpMode {
         pixelMover = hardwareMap.get(CRServo.class, "boxmover");
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         gate = hardwareMap.get(Servo.class, "gate");
-        //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
+        droneServo = hardwareMap.get(Servo.class, "drone");
+        droneServo.setPosition(.65);
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -197,16 +198,11 @@ public class CS13353TeleOp extends LinearOpMode {
                 linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
+            if(gamepad2.triangle) {
+                droneServo.setPosition(.25);
+            }
 
-//            if (gamepad1.dpad_down){
-            //release
-//                droneServo.setPower(-4);
-//            }
 
-//            if (gamepad1.dpad_up){
-            //wind back
-//                droneServo.setPower(4);
-//            }
 
             double max;
 

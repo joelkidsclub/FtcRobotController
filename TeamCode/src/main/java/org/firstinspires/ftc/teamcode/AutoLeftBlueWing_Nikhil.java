@@ -370,10 +370,9 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                     sleep(1000);
                     pixelMover.setPower(1);
                     sleep(2000);
+                    gate.setPosition(.135);
                     pixelMover.setPower(-1);
                     sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
                     pixelMover.setPower(-1);
                     sleep(1000);
                     pixelMover.setPower(1);
@@ -423,7 +422,7 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
                     pixelDropper.setPosition(.45);
-                    sleep(500);
+                    sleep(750);
 
                 case STATE_LEFT_POS3_STEP3:
                     if (!drive.isBusy()) {
@@ -453,7 +452,7 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
-                    sleep(1500);
+                    sleep(2500);
                 case STATE_LEFT_POS3_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -672,13 +671,13 @@ public class AutoLeftBlueWing_Nikhil extends LinearOpMode {
                 .strafeLeft(24)
                 .build();
         traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end())
-                .lineToLinearHeading(new Pose2d(-26,27,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-26,26.5,Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
                 .strafeLeft(32)
                 .build();
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())
-                .back(106.75)
+                .back(107)
                 .build();
         traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
                 .strafeRight(25)

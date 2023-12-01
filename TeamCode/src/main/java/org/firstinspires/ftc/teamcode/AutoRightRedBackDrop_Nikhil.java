@@ -147,15 +147,15 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
         elementPos = 3; //Hardcoded for testing
 
         if (elementPos == 1) {
-            desiredTagId = 1;
+            desiredTagId = 4;
         }
 
         if (elementPos == 2) {
-            desiredTagId = 2;
+            desiredTagId = 5;
         }
 
         if (elementPos == 3) {
-            desiredTagId = 3;
+            desiredTagId = 6;
         }
 
         telemetry.addData("Element position =>", elementPos);

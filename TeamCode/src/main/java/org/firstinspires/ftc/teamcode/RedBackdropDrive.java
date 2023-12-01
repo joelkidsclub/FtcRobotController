@@ -37,7 +37,7 @@ import java.util.logging.XMLFormatter;
  */
 @Config
 @Autonomous(name="AARedBackdropDrive", group = "drive")
-//@Disabled
+@Disabled
 public class RedBackdropDrive extends LinearOpMode {
 
     //april tag vars

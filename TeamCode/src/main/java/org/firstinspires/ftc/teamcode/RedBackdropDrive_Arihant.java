@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -33,7 +34,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(name="Arihant_RedBackdropDrive", group = "drive")
-//@Disabled
+@Disabled
 public class RedBackdropDrive_Arihant extends LinearOpMode {
 
     //april tag vars

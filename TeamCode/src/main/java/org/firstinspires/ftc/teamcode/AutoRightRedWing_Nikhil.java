@@ -158,7 +158,7 @@ public class AutoRightRedWing_Nikhil extends LinearOpMode {
         boolean armUp = false;
 
         initialize();
-        elementPos = 2; //Hardcoded for testing
+        elementPos = 3; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 4;

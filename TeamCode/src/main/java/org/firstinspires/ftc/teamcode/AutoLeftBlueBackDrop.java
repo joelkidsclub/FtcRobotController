@@ -28,9 +28,9 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AAAAutoRightRedBackDrop", group = "drive")
+@Autonomous(name="AutoLeftBlueBackDrop", group = "drive")
 //@Disabled
-public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
+public class AutoLeftBlueBackDrop extends LinearOpMode {
     /*
     elementPos for element position
        1 -> left
@@ -104,10 +104,8 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
 
     Trajectory traj_INITIAL;
     Trajectory traj_STATE_LEFT_POS1_STEP1;
-    Trajectory traj_STATE_LEFT_POS1_STEP1b;
     Trajectory traj_STATE_LEFT_POS1_STEP2;
     Trajectory traj_STATE_LEFT_POS1_STEP3;
-    Trajectory traj_STATE_LEFT_POS1_STEP3b;
     Trajectory traj_STATE_LEFT_POS1_STEP4;
     Trajectory traj_STATE_LEFT_POS1_STEP5;
     Trajectory traj_STATE_LEFT_POS1_STEP6;
@@ -117,14 +115,12 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
     Trajectory traj_STATE_LEFT_POS2_STEP5;
     Trajectory traj_STATE_LEFT_POS3_STEP1;
     Trajectory traj_STATE_LEFT_POS3_STEP1b;
-    Trajectory traj_STATE_LEFT_POS3_STEP1c;
 
     Trajectory traj_STATE_LEFT_POS3_STEP2;
     Trajectory traj_STATE_LEFT_POS3_STEP4;
-    Trajectory traj_STATE_LEFT_POS3_STEP4b;
     Trajectory traj_STATE_LEFT_POS3_STEP5;
 
-    AutoRightRedBackDrop_Nikhil.State currentState = AutoRightRedBackDrop_Nikhil.State.STATE_INITIAL;
+    AutoLeftBlueBackDrop.State currentState = AutoLeftBlueBackDrop.State.STATE_INITIAL;
     int ver = 1;
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
@@ -144,18 +140,18 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
         boolean armUp = false;
 
         initialize();
-        elementPos = 3; //Hardcoded for testing
+        //elementPos = 3; //Hardcoded for testing
 
         if (elementPos == 1) {
-            desiredTagId = 4;
+            desiredTagId = 1;
         }
 
         if (elementPos == 2) {
-            desiredTagId = 5;
+            desiredTagId = 2;
         }
 
         if (elementPos == 3) {
-            desiredTagId = 6;
+            desiredTagId = 3;
         }
 
         telemetry.addData("Element position =>", elementPos);
@@ -198,7 +194,7 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     visionPortal.setProcessorEnabled(aprilTag, false);
                     break;
 
-                /*case STATE_LEFT_POS1_STEP1:
+                case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP2;
@@ -207,9 +203,6 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_INITIAL);
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1);
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1b);
-                    pixelDropper.setPosition(.45);
-                    sleep(1000);
 
                 case STATE_LEFT_POS1_STEP2:
                     telemetry.addData("currentState => ", currentState);
@@ -219,37 +212,18 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
+                    pixelDropper.setPosition(45.00);
                     sleep(1500);
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-
-                    gate.setPosition(1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
-                    sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
                     //pixelDropper.setPosition(45.00);
 
                 case STATE_LEFT_POS1_STEP3:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_POS_REALIGN;
+                        currentState = State.STATE_LEFT_POS1_STEP4;
                         telemetry.addData("nextState => ", currentState);
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3b);
                     break;
 
                 case STATE_LEFT_POS1_STEP4:
@@ -273,7 +247,6 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     sleep(1000);
                     gate.setPosition(1);
                     gate.setPosition(.135);
-                    sleep(1000);
                     pixelMover.setPower(-1);
                     sleep(1000);
                     pixelMover.setPower(1);
@@ -301,7 +274,7 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
                     break;
                 // Position 2
-                /*case STATE_LEFT_POS2_STEP1:
+                case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP2;
@@ -323,6 +296,7 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
+                    pixelDropper.setPosition(00);
                     sleep(1500);
                 case STATE_LEFT_POS2_STEP3:
                     if (!drive.isBusy()) {
@@ -342,8 +316,8 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     sleep(1000);
                     gate.setPosition(1);
                     gate.setPosition(.135);
-                    sleep(250);
                     pixelMover.setPower(-1);
+                    sleep(1000);
                     pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
@@ -369,7 +343,7 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
                     sleep(1500);
-*/
+
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -380,10 +354,9 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_INITIAL);
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
+                    drive.turn(Math.toRadians(-90));
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1b);
                     pixelDropper.setPosition(45.00);
-                    sleep(1000);
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1c);
                     sleep(1500);
                 case STATE_LEFT_POS3_STEP2:
                     telemetry.addData("currentState => ", currentState);
@@ -395,6 +368,12 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
                     sleep(1500);
+
+                case STATE_LEFT_POS3_STEP3:
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_POS3_STEP4;
+                        telemetry.addData("nextState => ", currentState);
+                    }
                     if(!armUp) {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
@@ -408,15 +387,23 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     sleep(1000);
                     gate.setPosition(1);
                     gate.setPosition(.135);
-                    sleep(1000);
                     pixelMover.setPower(-1);
                     sleep(1000);
                     pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-                    //pixelDropper.setPosition(45.00);
 
                 case STATE_LEFT_POS3_STEP4:
+                    telemetry.addData("currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_POS3_STEP5;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+                    telemetry.update();
+
+                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
+                    sleep(1500);
+                case STATE_LEFT_POS3_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_POS_REALIGN;
@@ -424,8 +411,7 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     }
                     telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4b);
+                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
                     sleep(1500);
 
                 case STATE_POS_REALIGN:
@@ -463,8 +449,6 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
                     break;
-
-
 
             } //End switch
         } //End while
@@ -537,32 +521,35 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                 .back(2)
                 .build();
         traj_STATE_LEFT_POS1_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .strafeLeft(13)
+                .strafeRight(13)
                 .build();
-        traj_STATE_LEFT_POS1_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
-                .lineToLinearHeading(new Pose2d(-35.75,1, Math.toRadians(90)))
-                .build();
-        traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1b.end())
-                .lineToLinearHeading(new Pose2d(-37,41.5, Math.toRadians(-90)))
+        traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
+                .back(15)
                 .build();
         traj_STATE_LEFT_POS1_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP2.end())
-                .strafeLeft(32)
+                .forward(5)
                 .build();
-        traj_STATE_LEFT_POS1_STEP3b = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
-                .back(15)
+        traj_STATE_LEFT_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
+                .lineToLinearHeading(new Pose2d(-19,-39.5, Math.toRadians(90)))
+                .build();
+        traj_STATE_LEFT_POS1_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP4.end())
+                .strafeRight(24)
+                .build();
+        traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
+                .back(10)
                 .build();
 
 // Position 2
         traj_STATE_LEFT_POS2_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .back(23.25)
+                .lineToLinearHeading(new Pose2d(-44,-17, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP1.end())
-                .lineToLinearHeading(new Pose2d(-24.25,40.5, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-28.5,-41, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP2.end())
-                .strafeLeft(28)
+                .strafeRight(28)
                 .build();
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
@@ -570,21 +557,18 @@ public class AutoRightRedBackDrop_Nikhil extends LinearOpMode {
                 .build();
 // Position 3
         traj_STATE_LEFT_POS3_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .strafeLeft(7.5)
+                .back(26)
                 .build();
-        traj_STATE_LEFT_POS3_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end())
-                .back(17.75)
+        traj_STATE_LEFT_POS3_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end().plus(new Pose2d(0, 0, Math.toRadians(-90))))
+                .back(3)
                 .build();
-        traj_STATE_LEFT_POS3_STEP1c = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1b.end())
-                .forward(4)
-                .build();
-        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1c.end())
-                .lineToLinearHeading(new Pose2d(-21,39.75,Math.toRadians(-90)))
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1b.end())
+                .lineToLinearHeading(new Pose2d(-32,-38,Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
-                .strafeLeft(24)
+                .strafeRight(32)
                 .build();
-        traj_STATE_LEFT_POS3_STEP4b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
+        traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
                 .back(10)
                 .build();
 

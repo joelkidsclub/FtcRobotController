@@ -668,18 +668,28 @@ public class AutoRightRedWing extends LinearOpMode {
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
             double x = 0;
+            double y = 0;
+
             if (!tfod.getRecognitions().isEmpty()) {
                 Recognition recognition = tfod.getRecognitions().get(0);
                 x = (recognition.getLeft() + recognition.getRight()) / 2;
+                y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-                //telemetry.addData("object detected:", x);
-                if (x <= 250) {
-                    elementPos = 1;
-                } else if (x > 250) { //x coord for right){
+                telemetry.addData(""," ");
+                telemetry.addData("Image => ", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                telemetry.addData("- Position =>", "%.0f / %.0f", x, y);
+                telemetry.addData("- Size => ", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+
+                if (x > 115 && x < 275){
                     elementPos = 2;
-                }else{
+                } else if (x > 300){
+                    elementPos = 3;
+                } else if (x < 115){
+                    elementPos = 1;
+                } else {
                     elementPos = 3;
                 }
+
             }
         } //End While
     } //End Init

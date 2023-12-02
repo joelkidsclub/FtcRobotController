@@ -235,7 +235,7 @@ public class RedBackdropDriveOld extends LinearOpMode {
                     } else if (x < 115){
                         elementPos = 1;
                     } else {
-                        elementPos = 1;
+                        elementPos = 2;
                     }
 
                     telemetry.addData("finalX =>", recognition.getLeft());

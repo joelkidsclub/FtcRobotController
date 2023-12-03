@@ -60,9 +60,9 @@ public class AutoRightRedWing extends LinearOpMode {
     //boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
     private static final String[] LABELS = {
-            "BlueProp"
+            "RedProp"
     };
 
     /**
@@ -157,7 +157,7 @@ public class AutoRightRedWing extends LinearOpMode {
         boolean pixelDropped = false;
         boolean armUp = false;
 
-        initialize();
+        elementPos = initialize();
         //elementPos = 3; //Hardcoded for testing
 
         if (elementPos == 1) {
@@ -210,7 +210,7 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
                     visionPortal.setProcessorEnabled(tfod, true);
                     visionPortal.setProcessorEnabled(aprilTag, false);
-                    break;
+                    //break;
 
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -243,7 +243,7 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
-                    break;
+                    //break;
 
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
@@ -266,7 +266,7 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
-                    break;
+                    //break;
                 case STATE_LEFT_POS1_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -281,20 +281,19 @@ public class AutoRightRedWing extends LinearOpMode {
                         armUp = true;
                     }
 
-                    gate.setPosition(1);
+                    //gate.setPosition(1);
+                    //sleep(1000);
+                    //pixelMover.setPower(1);
                     sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
                     pixelMover.setPower(-1);
                     sleep(1000);
-                    gate.setPosition(1);
+                    //gate.setPosition(1);
                     gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
+                    //pixelMover.setPower(-1);
+                    sleep(2000);
+                    //pixelMover.setPower(1);
                     pixelMover.setPower(1);
-                    pixelMover.setPower(1);
                     sleep(1000);
-                    break;
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -305,6 +304,7 @@ public class AutoRightRedWing extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP7);
                     sleep(1000);
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP7b);
+                    sleep(6000);
                     break;
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
@@ -344,20 +344,19 @@ public class AutoRightRedWing extends LinearOpMode {
                         armUp = true;
                     }
 
-                    gate.setPosition(1);
+                    //gate.setPosition(1);
+                    //sleep(1000);
+                    //pixelMover.setPower(1);
                     sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
                     pixelMover.setPower(-1);
-                    gate.setPosition(1);
                     sleep(1000);
+                    //gate.setPosition(1);
                     gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
+                    //pixelMover.setPower(-1);
+                    sleep(2000);
+                    //pixelMover.setPower(1);
                     pixelMover.setPower(1);
-                    pixelMover.setPower(1);
                     sleep(1000);
-                    break;
                 case STATE_LEFT_POS2_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -377,6 +376,8 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
                     telemetry.update();
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
+                    sleep(6000);
+                    break;
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -441,15 +442,16 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
 
                     //gate.setPosition(1);
+                    //sleep(1000);
                     //pixelMover.setPower(1);
                     sleep(1000);
                     pixelMover.setPower(-1);
                     sleep(1000);
                     //gate.setPosition(1);
                     gate.setPosition(.135);
-                    sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
+                    //pixelMover.setPower(-1);
+                    sleep(2000);
+                    //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
 
@@ -471,7 +473,8 @@ public class AutoRightRedWing extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8b);
-                    sleep(1500);
+                    sleep(6000);
+                    break;
                 case STATE_POS_REALIGN:
                     //step = 5;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
@@ -490,7 +493,7 @@ public class AutoRightRedWing extends LinearOpMode {
 
                     */
                     currentState = State.STATE_PARK;
-                    break;
+                   // break;
 
                 case STATE_PARK:
                     step = 99;
@@ -502,7 +505,7 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
                     telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
                     telemetry.update();
-                    break;
+                   // break;
                 case IDLE:
                     step = 100;
                     //Do Nothing
@@ -521,8 +524,9 @@ public class AutoRightRedWing extends LinearOpMode {
 
     }   // end method initTfod()
 
-    public void initialize(){
+    public int initialize(){
         pixelDropper.setPosition(0);
+        int tfodEP = 1;
         //pixelMover.setPower(1);
         //sleep(2000);
         //gate.setPosition(1);
@@ -663,35 +667,48 @@ public class AutoRightRedWing extends LinearOpMode {
 
         while(!isStarted() && !isStopRequested()){
             initTfod();
-            tfod.setZoom(2.0);
-
+            tfod.setZoom(1.25);
+            tfodEP = 1;
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
             double x = 0;
             double y = 0;
 
-            if (!tfod.getRecognitions().isEmpty()) {
-                Recognition recognition = tfod.getRecognitions().get(0);
-                x = (recognition.getLeft() + recognition.getRight()) / 2;
+            List<Recognition> currentRecognitions = tfod.getRecognitions();
+            telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+            if(currentRecognitions.size() == 0) {
+                tfodEP = 1;
+            }
+
+            for (Recognition recognition : currentRecognitions) {
+                x = (recognition.getLeft() + recognition.getRight()) / 2 ;
                 y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+                if (x > 90 && x < 350) {
+                    tfodEP = 2;
+                    telemetry.addData("- Element Position =>", tfodEP);
+                    //telemetry.update();
+                } else if (x > 400) {
+                    tfodEP = 3;
+                    telemetry.addData("- Element Position =>", tfodEP);
+                    //telemetry.update();
+                } else {
+                    telemetry.addData("- Element Position =>", tfodEP);
+                }
 
                 telemetry.addData(""," ");
                 telemetry.addData("Image => ", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
                 telemetry.addData("- Position =>", "%.0f / %.0f", x, y);
                 telemetry.addData("- Size => ", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
-                if (x > 115 && x < 275){
-                    elementPos = 2;
-                } else if (x > 300){
-                    elementPos = 3;
-                } else if (x < 115){
-                    elementPos = 1;
-                } else {
-                    elementPos = 3;
-                }
+            }   // end for() loop
+            telemetry.addData("- tfodEP =>",tfodEP);
 
-            }
+            sleep(20);
+            telemetry.update();
         } //End While
+        return  tfodEP;
     } //End Init
 
     public void detectAprilTag(){

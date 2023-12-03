@@ -88,12 +88,9 @@ public class DetectElementBlue extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-
                 telemetryTfod();
-
                 // Push telemetry to the Driver Station.
                 telemetry.update();
-
                 // Save CPU resources; can resume streaming when needed.
                 if (gamepad1.dpad_down) {
                     visionPortal.stopStreaming();

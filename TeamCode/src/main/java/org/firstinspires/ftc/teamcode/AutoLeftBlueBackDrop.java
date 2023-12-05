@@ -192,7 +192,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     }
                     visionPortal.setProcessorEnabled(tfod, true);
                     visionPortal.setProcessorEnabled(aprilTag, false);
-                    //break;
+                    break;
 
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -224,7 +224,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
-                   // break;
+
 
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
@@ -263,16 +263,16 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
-                    //break;
+
                 case STATE_LEFT_POS1_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
                     }
-
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
-                    //break;
+                    sleep(10000);
+
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -357,6 +357,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
                     sleep(1500);
+                    sleep(10000);
 
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -440,7 +441,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
-                    sleep(1500);
+                    sleep(10000);
 
                 case STATE_POS_REALIGN:
                     step = 5;
@@ -457,7 +458,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
-                    //break;
+
 
                 case STATE_PARK:
                     step = 99;
@@ -469,14 +470,15 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     }
                     telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
                     telemetry.update();
-                    break;
+
                 case IDLE:
                     step = 100;
                     //Do Nothing
                     done = true;
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
-                    break;
+                    sleep(10000);
+
 
             } //End switch
         } //End while

@@ -196,7 +196,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     }
                     visionPortal.setProcessorEnabled(tfod, true);
                     visionPortal.setProcessorEnabled(aprilTag, false);
-                    //break;
+                    break;
 
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -247,7 +247,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3b);
-                    break;
+
 
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
@@ -271,7 +271,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     //gate.setPosition(1);
                     gate.setPosition(.135);
                     //pixelMover.setPower(-1);
-                    sleep(2000);
+                    sleep(3000);
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
@@ -286,7 +286,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
-                    //break;
+
                 case STATE_LEFT_POS1_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -295,7 +295,8 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
-                    //break;
+                    sleep(10000);
+
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -334,12 +335,13 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     //sleep(1000);
                     //pixelMover.setPower(1);
                     sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    //gate.setPosition(1);
                     gate.setPosition(.135);
+                    sleep(1000);
+                    pixelMover.setPower(-1);
+                    //gate.setPosition(1);
+
                     //pixelMover.setPower(-1);
-                    sleep(2000);
+                    sleep(3000);
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
@@ -364,8 +366,8 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
-                    sleep(1500);
-                    break;
+                    sleep(15000);
+
 
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -421,8 +423,8 @@ public class AutoRightRedBackDrop extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4b);
-                    sleep(1500);
-                    break;
+                    sleep(15000);
+
                 case STATE_POS_REALIGN:
                     step = 5;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
@@ -438,7 +440,7 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
-                    //break;
+
 
                 case STATE_PARK:
                     step = 99;
@@ -450,14 +452,14 @@ public class AutoRightRedBackDrop extends LinearOpMode {
                     }
                     telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
                     telemetry.update();
-                    //break;
+
                 case IDLE:
                     step = 100;
                     //Do Nothing
                     done = true;
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
-                    break;
+                    sleep(10000);
 
 
 

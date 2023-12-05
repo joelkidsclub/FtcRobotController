@@ -260,7 +260,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
-                    break;
+
                 case STATE_LEFT_POS1_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -288,7 +288,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-                    //break;
+
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -306,7 +306,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP8);
-                    sleep(6000);
+                    sleep(10000);
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -398,7 +398,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP7);
-                    sleep(6000);
+                    sleep(10000);
 
                 // Position 3
                 case STATE_LEFT_POS3_STEP1:
@@ -499,7 +499,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8);
-                    sleep(6000);
+                    sleep(10000);
 
 
                 case STATE_POS_REALIGN:
@@ -517,7 +517,6 @@ public class AutoLeftBlueWing extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
-                    break;
 
                 case STATE_PARK:
                     step = 99;
@@ -529,14 +528,14 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     }
                     telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
                     telemetry.update();
-                    break;
+
                 case IDLE:
                     step = 100;
                     //Do Nothing
                     done = true;
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
-                    break;
+                    sleep(10000);
 
             } //End switch
         } //End while

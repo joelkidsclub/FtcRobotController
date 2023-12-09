@@ -94,7 +94,7 @@ public class CS13353TeleOp extends LinearOpMode {
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         gate = hardwareMap.get(Servo.class, "gate");
         droneServo = hardwareMap.get(Servo.class, "drone");
-        droneServo.setPosition(.65);
+
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -199,7 +199,7 @@ public class CS13353TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.triangle) {
-                droneServo.setPosition(.25);
+                droneServo.setPosition(.2);
             }
 
 

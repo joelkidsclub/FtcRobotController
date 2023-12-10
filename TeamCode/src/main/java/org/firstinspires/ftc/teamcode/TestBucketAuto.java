@@ -398,7 +398,6 @@ public class TestBucketAuto extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-
                 case STATE_LEFT_POS3_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {

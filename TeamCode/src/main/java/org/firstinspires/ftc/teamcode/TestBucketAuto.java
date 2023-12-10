@@ -97,6 +97,7 @@ public class TestBucketAuto extends LinearOpMode {
         STATE_LEFT_POS3_STEP3,
         STATE_LEFT_POS3_STEP4,
         STATE_LEFT_POS3_STEP5,
+        STATE_LEFT_POS4_STEP1,
         STATE_POS_REALIGN,
         STATE_PARK,//
         IDLE//
@@ -140,7 +141,7 @@ public class TestBucketAuto extends LinearOpMode {
         boolean armUp = false;
 
         elementPos = initialize();
-        elementPos = 3; //Hardcoded for testing
+        elementPos = 4; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -151,6 +152,10 @@ public class TestBucketAuto extends LinearOpMode {
         }
 
         if (elementPos == 3) {
+            desiredTagId = 3;
+        }
+
+        if (elementPos == 4) {
             desiredTagId = 3;
         }
 
@@ -182,6 +187,8 @@ public class TestBucketAuto extends LinearOpMode {
                             currentState = State.STATE_LEFT_POS2_STEP1;
                         else if (elementPos == 3)
                             currentState = State.STATE_LEFT_POS3_STEP1;
+                        else if (elementPos == 4)
+                            currentState = State.STATE_LEFT_POS4_STEP1;
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
@@ -321,21 +328,6 @@ public class TestBucketAuto extends LinearOpMode {
                     pixelMover.setPower(1);
                     sleep(1000);
 
-/*
-                    gate.setPosition(1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
-*/
                 case STATE_LEFT_POS2_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -407,21 +399,6 @@ public class TestBucketAuto extends LinearOpMode {
                     pixelMover.setPower(1);
                     sleep(1000);
 
-                    /*
-                    gate.setPosition(1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
-*/
                 case STATE_LEFT_POS3_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -442,6 +419,30 @@ public class TestBucketAuto extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
                     sleep(10000);
+                case STATE_LEFT_POS4_STEP1:
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_LEFT_POS3_STEP4;
+                        telemetry.addData("nextState => ", currentState);
+                    }
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    sleep(1000);
+                    telemetry.addData("gate Position 1 => ", gate.getPosition());
+                    telemetry.addData("pixelMover Position 1 => ", gate.getPosition());
+                    pixelMover.setPower(-1);
+                    telemetry.addData("pixelMover Position 2 => ", gate.getPosition());
+                    //sleep(1000);
+                    gate.setPosition(1);
+                    telemetry.addData("gate Position 2=> ", gate.getPosition());
+                    gate.setPosition(.135);
+                    telemetry.addData("gate Position 3=> ", gate.getPosition());
+                    pixelMover.setPower(1);
+                    telemetry.addData("pixelMover Position 3 => ", gate.getPosition());
+                    //sleep(1000);
+                    telemetry.update();
+                    runArm(upSpeed, 138, 136);
 
                 case STATE_POS_REALIGN:
                     step = 5;

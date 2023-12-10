@@ -128,7 +128,7 @@ public class CS13353TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        upspeed = 0.4;
+        upspeed = 0.7;
 
         /** VERY IMPORTANT INFORMATION!!!!!
          * GAMEPAD1 CONTROLS AT THE MOMENT:

@@ -202,15 +202,12 @@ public class CS13353TeleOp extends LinearOpMode {
                 droneServo.setPosition(.2);
             }
 
-
-
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = gamepad1.left_stick_y * speed * inverted;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x * -speed * inverted;
             double yaw = gamepad1.right_stick_x * -turnspeed;
-
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -232,7 +229,6 @@ public class CS13353TeleOp extends LinearOpMode {
                 rightBackPower /= max;
             }
 
-
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
@@ -241,16 +237,24 @@ public class CS13353TeleOp extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Gamepad2 Y Spot", gamepad2.right_stick_y);
+            telemetry.addData("Front left/Right =>", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+            telemetry.addData("Back  left/Right =>", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Gamepad2 Y Spot =>", gamepad2.right_stick_y);
 //            DistanceSensor();
 //
 //           ColorSensor();
 
-            telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
-            telemetry.addData("Left slide", linearSlideLeft.getCurrentPosition());
-            telemetry.addData("Right slide", linearSlideRight.getCurrentPosition());
+            telemetry.addData("LinearSlideMovementValue =>", LinearSlideMovement);
+            telemetry.addData("Left slide =>", linearSlideLeft.getCurrentPosition());
+            telemetry.addData("Right slide =>", linearSlideRight.getCurrentPosition());
+            telemetry.addData("PixelMover power =>", pixelMover.getPower());
+            telemetry.addData("Gate position =>", gate.getPosition());
+            //pixelMover.setPower(-1);
+            //gate.setPosition(1);
+            //telemetry.addData("PixelMover power =>", pixelMover.getPower());
+            //pixelMover.setPower(1);
+            //gate.setPosition(0.136);
+            //telemetry.addData("Gate position =>", gate.getPosition());
             telemetry.update();
 
         }

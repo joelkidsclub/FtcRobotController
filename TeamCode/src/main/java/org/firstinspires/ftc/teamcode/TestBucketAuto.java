@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -38,6 +39,8 @@ public class TestBucketAuto extends LinearOpMode {
        3 -> right
     */
 
+    private ElapsedTime stateTime = new ElapsedTime();  // Time into current state
+
     int elementPos = 1; //Default to middle blue
     int targetTagBlue = 2;
     int targetTagRed = 2;
@@ -55,7 +58,8 @@ public class TestBucketAuto extends LinearOpMode {
     private DcMotor linearSlideRight  = null;
     static final int targetLeft = 771;
     static final int targetRight = 790;
-    private double upSpeed = .4;
+    private double upSpeed = .8;
+    boolean pixelBoxUp = false;
 
     //boolean pixelDropped = false;
 
@@ -98,6 +102,7 @@ public class TestBucketAuto extends LinearOpMode {
         STATE_LEFT_POS3_STEP4,
         STATE_LEFT_POS3_STEP5,
         STATE_LEFT_POS4_STEP1,
+        STATE_LEFT_POS4_STEP2,
         STATE_POS_REALIGN,
         STATE_PARK,//
         IDLE//
@@ -416,34 +421,78 @@ public class TestBucketAuto extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                     }
                     telemetry.update();
-
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
                     sleep(10000);
+
                 case STATE_LEFT_POS4_STEP1:
-                    if (!drive.isBusy()) {
-                        currentState = State.STATE_LEFT_POS3_STEP4;
-                        telemetry.addData("nextState => ", currentState);
-                    }
+                    stateTime.reset();
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("Armup? pre => ", armUp);
+
                     if(!armUp) {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
+                    telemetry.addData("Armup? post => ", armUp);
+
+                    movePixelBoxToDrop(2.0);
+                    openGateServo(2.0);
+                    movePixelBoxToIntake(2.0);
+                    telemetry.update();
+                    currentState = State.IDLE;
+
+                case STATE_LEFT_POS4_STEP2:
+                    stateTime.reset();
+                    telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("nextState => ", currentState);
+                    telemetry.addData("Armup? pre => ", armUp);
+
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    telemetry.addData("Armup? post => ", armUp);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("Before pixelMover. pixelBoxUp=>",pixelBoxUp);
+                    telemetry.addData("Before pixelMover. pixelBox Power=>",pixelMover.getPower());
+                    telemetry.update();
                     sleep(1000);
-                    telemetry.addData("gate Position 1 => ", gate.getPosition());
-                    telemetry.addData("pixelMover Position 1 => ", gate.getPosition());
-                    pixelMover.setPower(-1);
-                    telemetry.addData("pixelMover Position 2 => ", gate.getPosition());
-                    //sleep(1000);
-                    gate.setPosition(1);
-                    telemetry.addData("gate Position 2=> ", gate.getPosition());
-                    gate.setPosition(.135);
-                    telemetry.addData("gate Position 3=> ", gate.getPosition());
+                    stateTime.reset();
+                    telemetry.addData("Before pixelMover...","");
+                    telemetry.addData("Reseting time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("ArmUp =>", armUp);
+                    telemetry.addData("pixelBoxUp =>", pixelBoxUp);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
                     pixelMover.setPower(1);
-                    telemetry.addData("pixelMover Position 3 => ", gate.getPosition());
+                    sleep(2000);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
+                    sleep(500);
+
+                    if(armUp && !pixelBoxUp) {
+                        movePixelBoxToDrop(2);
+                        telemetry.addData("pixelMover power 1 => ", pixelMover.getPower());
+                        telemetry.update();
+                        if (pixelMover.getPower() == 1) {
+                            pixelBoxUp = true;
+                        }
+                    }
+                    sleep(2000);
+                    telemetry.addData("After pixelMover...","");
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("gate Position 0 (moveGateServo) => ", gate.getPosition());
+                    openGateServo(2);//closed
+                    sleep(2000);
+                    telemetry.addData("gate Position 1 (moveGateServo) => ", gate.getPosition());
+                    //stateTime.reset();
+                    sleep(2000);
+                    telemetry.addData("gate Position 2 (moveGateServo) => ", gate.getPosition());
+                    //pixelMover.setPower(1);
+                    telemetry.addData("pixelMover Position 3 => ", pixelMover.getPower());
                     //sleep(1000);
                     telemetry.update();
                     runArm(upSpeed, 138, 136);
-
                 case STATE_POS_REALIGN:
                     step = 5;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
@@ -479,13 +528,42 @@ public class TestBucketAuto extends LinearOpMode {
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
                     sleep(10000);
-
-
             } //End switch
         } //End while
         telemetry.update();
-
     } //End runopmode
+
+    public void openGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(.135);
+        }
+    }
+
+    public void closeGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(1);
+        }
+    }
+
+    public void movePixelBoxToDrop(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(-1);
+        }
+    }
+
+    public void movePixelBoxToIntake(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < 2) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(1);
+        }
+    }
 
     private void initTfod() {
 
@@ -763,6 +841,10 @@ public class TestBucketAuto extends LinearOpMode {
 
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
+
+        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
             linearSlideLeft.setTargetPosition(leftTicks);

@@ -199,7 +199,7 @@ public class CS13353TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.triangle) {
-                droneServo.setPosition(.2);
+                droneServo.setPosition(0.55);
             }
 
             double max;

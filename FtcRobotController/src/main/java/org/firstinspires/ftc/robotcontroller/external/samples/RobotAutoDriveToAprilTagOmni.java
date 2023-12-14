@@ -281,6 +281,7 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
         }
     }
 
+
     /*
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;

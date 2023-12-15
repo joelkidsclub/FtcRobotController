@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,6 +48,13 @@ import java.util.concurrent.TimeUnit;
 /*
  * This OpMode illustrates using a camera to locate and drive towards a specific AprilTag.
  * The code assumes a Holonomic (Mecanum or X Drive) Robot.
+ *
+ * For an introduction to AprilTags, see the ftc-docs link below:
+ * https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
+ *
+ * When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the tag, relative to the camera.
+ * This information is provided in the "ftcPose" member of the returned "detection", and is explained in the ftc-docs page linked below.
+ * https://ftc-docs.firstinspires.org/apriltag-detection-values
  *
  * The drive goal is to rotate to keep the Tag centered in the camera, while strafing to be directly in front of the tag, and
  * driving towards the tag to achieve the desired distance.
@@ -80,12 +85,12 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-@Autonomous(name="ManuOmniDriveToAprilTag", group = "xConcept")
+@TeleOp(name="Omni Drive To AprilTag", group = "Concept")
 //@Disabled
-public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
+public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 6.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 4.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -104,57 +109,10 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
     private DcMotor rightBackDrive   = null;  //  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = 2;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-    static final double HD_COUNTS_PER_REV = 28;
-    static final double DRIVE_GEAR_REDUCTION = 20.15293;
-    static final double WHEEL_CIRCUMFERENCE_MM = 90 * Math.PI;
-    static final double DRIVE_COUNTS_PER_MM = (HD_COUNTS_PER_REV * DRIVE_GEAR_REDUCTION) / WHEEL_CIRCUMFERENCE_MM;
-    static final double DRIVE_COUNTS_PER_IN = DRIVE_COUNTS_PER_MM * 25.4;
-    // Drive function with 3 parameters
-//    private void drive(double power, double leftInches, double rightInches) {
-//        int rightTarget;
-//        int leftTarget;
-//
-//        if (opModeIsActive()) {
-//            // Create target positions
-//            rightTarget = rightFrontDrive.getCurrentPosition() + (int)(rightInches * DRIVE_COUNTS_PER_IN);
-//            leftTarget = leftFrontDrive.getCurrentPosition() + (int)(leftInches * DRIVE_COUNTS_PER_IN);
-//            rightTarget = rightBackDrive.getCurrentPosition() + (int)(rightInches * DRIVE_COUNTS_PER_IN);
-//            leftTarget = leftBackDrive.getCurrentPosition() + (int)(leftInches * DRIVE_COUNTS_PER_IN);
-//
-//            // set target position
-//            leftFrontDrive.setTargetPosition(leftTarget);
-//            rightFrontDrive.setTargetPosition(rightTarget);
-//            leftBackDrive.setTargetPosition(leftTarget);
-//            rightBackDrive.setTargetPosition(rightTarget);
-//
-//            //switch to run to position mode
-//            leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//            //run to position at the desiginated power
-//            leftFrontDrive.setPower(power);
-//            rightFrontDrive.setPower(power);
-//            leftBackDrive.setPower(power);
-//            rightBackDrive.setPower(power);
-//
-//            // wait until both motors are no longer busy running to position
-//            while (opModeIsActive() && (leftFrontDrive.isBusy() || rightFrontDrive.isBusy() || leftBackDrive.isBusy() || rightBackDrive.isBusy())) {
-//            }
-//
-//            // set motor power back to 0
-//            leftFrontDrive.setPower(0);
-//            rightFrontDrive.setPower(0);
-//            leftBackDrive.setPower(0);
-//            rightBackDrive.setPower(0);
-//        }
-//    } --- Drive function
-//
 
     @Override public void runOpMode()
     {
@@ -191,44 +149,45 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
         telemetry.update();
         waitForStart();
 
-//        if (opModeIsActive()) {
-//            drive(0.7, 12, 12);
-//            drive(0.7, 34, 0);
-//            drive(0.7, 5, 5);
-//        } -- out of loop
-
         while (opModeIsActive())
         {
-//            if (opModeIsActive()) {
-//
-//                drive(0.7, 15, 30);
-//                drive(0.7, 30, 30); --- in a loop
-//
-//
-//            }
             targetFound = false;
             desiredTag  = null;
 
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
-                if ((detection.metadata != null) &&
-                    ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID))  ){
-                    targetFound = true;
-                    desiredTag = detection;
-                    break;  // don't look any further.
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                        // Yes, we want to use this tag.
+                        targetFound = true;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
                 } else {
-                    telemetry.addData("Unknown Target", "Tag ID %d is not in TagLibrary\n", detection.id);
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
             }
 
             // Tell the driver what we see, and what to do.
             if (targetFound) {
-                telemetry.addData(">","Found Target\n");
-                telemetry.addData("Target", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+            } else {
+                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+            }
+
+            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            if (gamepad1.left_bumper && targetFound) {
 
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
@@ -239,31 +198,20 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
                 drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                 turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-//                drive(0.7, 12, 12);
+
                 telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else {
-                telemetry.addData(">","Cant find april tag\n");
-            }
 
-            // If desired target, Drive to target Automatically .
-//            if (targetFound) {
-//
-//                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-//                double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-//                double  headingError    = desiredTag.ftcPose.bearing;
-//                double  yawError        = desiredTag.ftcPose.yaw;
-//
-//                // Use the speed and turn "gains" to calculate how we want the robot to move.
-//                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-//                turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-//                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-//
-//                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-//            }
+                // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+                drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+                strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+                turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+                telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            }
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
-//            moveRobot(drive, strafe, turn);
+            moveRobot(drive, strafe, turn);
             sleep(10);
         }
     }
@@ -277,31 +225,31 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
      * <p>
      * Positive Yaw is counter-clockwise
      */
-//    public void moveRobot(double x, double y, double yaw) {
-//        // Calculate wheel powers.
-//        double leftFrontPower    =  x -y -yaw;
-//        double rightFrontPower   =  x +y +yaw;
-//        double leftBackPower     =  x +y -yaw;
-//        double rightBackPower    =  x -y +yaw;
-//
-//        // Normalize wheel powers to be less than 1.0
-//        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-//        max = Math.max(max, Math.abs(leftBackPower));
-//        max = Math.max(max, Math.abs(rightBackPower));
-//
-//        if (max > 1.0) {
-//            leftFrontPower /= max;
-//            rightFrontPower /= max;
-//            leftBackPower /= max;
-//            rightBackPower /= max;
-//        }
-//
-//        // Send powers to the wheels.
-//        leftFrontDrive.setPower(leftFrontPower);
-//        rightFrontDrive.setPower(rightFrontPower);
-//        leftBackDrive.setPower(leftBackPower);
-//        rightBackDrive.setPower(rightBackPower);
-//    }
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+    }
 
     /**
      * Initialize the AprilTag processor.
@@ -309,6 +257,15 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
+
+        // Adjust Image Decimation to trade-off detection-range for detection-rate.
+        // eg: Some typical detection data using a Logitech C920 WebCam
+        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
+        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
+        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
+        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
+        // Note: Decimation can be changed on-the-fly to adapt during a match.
+        aprilTag.setDecimation(2);
 
         // Create the vision portal by using a builder.
         if (USE_WEBCAM) {
@@ -323,6 +280,7 @@ public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
                     .build();
         }
     }
+
 
     /*
      Manually set the camera gain and exposure.

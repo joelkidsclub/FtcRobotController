@@ -182,8 +182,6 @@ public class CS13353TeleOp extends LinearOpMode {
                 pixelMover.setPower(-1);
             }
 
-
-
             if(gamepad2.circle) {
                 gate.setPosition(0.135);
 

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -55,9 +56,11 @@ public class AutoLeftBlueWing extends LinearOpMode {
     private DcMotor linearSlideRight  = null;
     static final int targetLeft = 771;
     static final int targetRight = 790;
-    private double upSpeed = .4;
+    private double upSpeed = .8;
+    boolean pixelBoxUp = false;
 
-    //boolean pixelDropped = false;
+    private ElapsedTime stateTime = new ElapsedTime();  // Time into current state
+    boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
@@ -103,6 +106,8 @@ public class AutoLeftBlueWing extends LinearOpMode {
         STATE_LEFT_POS3_STEP6,
         STATE_LEFT_POS3_STEP7,
         STATE_LEFT_POS3_STEP8,
+        STATE_LEFT_POS4_STEP1,
+        STATE_LEFT_POS4_STEP2,
         STATE_POS_REALIGN,
         STATE_PARK,//
         IDLE//
@@ -156,6 +161,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
 
         elementPos = initialize();
         //elementPos = 3; //Hardcoded for testing
+        elementPos = 4; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -168,6 +174,11 @@ public class AutoLeftBlueWing extends LinearOpMode {
         if (elementPos == 3) {
             desiredTagId = 3;
         }
+
+        if (elementPos == 4) {
+            desiredTagId = 3;
+        }
+
 
         telemetry.addData("Element position =>", elementPos);
         telemetry.addData("Desired tag =>", elementPos);
@@ -197,6 +208,8 @@ public class AutoLeftBlueWing extends LinearOpMode {
                             currentState = State.STATE_LEFT_POS2_STEP1;
                         else if (elementPos == 3)
                             currentState = State.STATE_LEFT_POS3_STEP1;
+                        else if (elementPos == 4)
+                            currentState = State.STATE_LEFT_POS4_STEP1;
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
@@ -274,7 +287,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
-
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -288,7 +301,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-
+*/
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -364,7 +377,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
-
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -378,7 +391,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-
+*/
                 case STATE_LEFT_POS2_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -466,7 +479,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
-
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -480,7 +493,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-
+*/
                 case STATE_LEFT_POS3_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -500,7 +513,80 @@ public class AutoLeftBlueWing extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8);
                     sleep(10000);
+                case STATE_LEFT_POS4_STEP1:
+                    stateTime.reset();
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("Armup? pre => ", armUp);
 
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    telemetry.addData("Armup? post => ", armUp);
+
+                    if (!pixelDropped) {
+                        movePixelBoxToDrop(2.0);
+                        openGateServo(2.0);
+                        movePixelBoxToIntake(2.0);
+                        pixelDropped = true;
+
+                    }
+
+                    telemetry.update();
+                    currentState = State.IDLE;
+
+                case STATE_LEFT_POS4_STEP2:
+                    stateTime.reset();
+                    telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("nextState => ", currentState);
+                    telemetry.addData("Armup? pre => ", armUp);
+
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    telemetry.addData("Armup? post => ", armUp);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("Before pixelMover. pixelBoxUp=>",pixelBoxUp);
+                    telemetry.addData("Before pixelMover. pixelBox Power=>",pixelMover.getPower());
+                    telemetry.update();
+                    sleep(1000);
+                    stateTime.reset();
+                    telemetry.addData("Before pixelMover...","");
+                    telemetry.addData("Reseting time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("ArmUp =>", armUp);
+                    telemetry.addData("pixelBoxUp =>", pixelBoxUp);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
+                    pixelMover.setPower(1);
+                    sleep(2000);
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
+                    sleep(500);
+
+                    if(armUp && !pixelBoxUp) {
+                        movePixelBoxToDrop(2);
+                        telemetry.addData("pixelMover power 1 => ", pixelMover.getPower());
+                        telemetry.update();
+                        if (pixelMover.getPower() == 1) {
+                            pixelBoxUp = true;
+                        }
+                    }
+                    sleep(2000);
+                    telemetry.addData("After pixelMover...","");
+                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("gate Position 0 (moveGateServo) => ", gate.getPosition());
+                    openGateServo(2);//closed
+                    sleep(2000);
+                    telemetry.addData("gate Position 1 (moveGateServo) => ", gate.getPosition());
+                    //stateTime.reset();
+                    sleep(2000);
+                    telemetry.addData("gate Position 2 (moveGateServo) => ", gate.getPosition());
+                    //pixelMover.setPower(1);
+                    telemetry.addData("pixelMover Position 3 => ", pixelMover.getPower());
+                    //sleep(1000);
+                    telemetry.update();
+                    runArm(upSpeed, 138, 136);
 
                 case STATE_POS_REALIGN:
                     step = 5;
@@ -542,6 +628,39 @@ public class AutoLeftBlueWing extends LinearOpMode {
         telemetry.update();
 
     } //End runopmode
+
+    public void openGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(.135);
+        }
+    }
+
+    public void closeGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(1);
+        }
+    }
+
+    public void movePixelBoxToDrop(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(-1);
+        }
+    }
+
+    public void movePixelBoxToIntake(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < 2) {
+            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(1);
+        }
+    }
+
 
     private void initTfod() {
 

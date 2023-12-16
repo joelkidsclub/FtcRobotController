@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -55,9 +56,10 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     private DcMotor linearSlideRight  = null;
     static final int targetLeft = 771;
     static final int targetRight = 790;
-    private double upSpeed = .4;
-
-    //boolean pixelDropped = false;
+    private double upSpeed = .8;
+    boolean pixelBoxUp = false;
+    private ElapsedTime stateTime = new ElapsedTime();  // Time into current state
+    boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
@@ -97,6 +99,8 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         STATE_LEFT_POS3_STEP3,
         STATE_LEFT_POS3_STEP4,
         STATE_LEFT_POS3_STEP5,
+        STATE_LEFT_POS4_STEP1,
+        STATE_LEFT_POS4_STEP2,
         STATE_POS_REALIGN,
         STATE_PARK,//
         IDLE//
@@ -120,7 +124,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
     Trajectory traj_STATE_LEFT_POS3_STEP4;
     Trajectory traj_STATE_LEFT_POS3_STEP5;
 
-    AutoLeftBlueBackDrop.State currentState = AutoLeftBlueBackDrop.State.STATE_INITIAL;
+    State currentState = State.STATE_INITIAL;
     int ver = 1;
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
@@ -140,7 +144,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         boolean armUp = false;
 
         elementPos = initialize();
-        //elementPos = 3; //Hardcoded for testing
+        elementPos = 4; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -151,6 +155,10 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
         }
 
         if (elementPos == 3) {
+            desiredTagId = 3;
+        }
+
+        if (elementPos == 4) {
             desiredTagId = 3;
         }
 
@@ -182,6 +190,8 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                             currentState = State.STATE_LEFT_POS2_STEP1;
                         else if (elementPos == 3)
                             currentState = State.STATE_LEFT_POS3_STEP1;
+                        else if (elementPos == 4)
+                            currentState = State.STATE_LEFT_POS4_STEP1;
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
@@ -238,7 +248,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
-
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -252,9 +262,8 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-
                     pixelDropped = true;
-
+*/
                 case STATE_LEFT_POS1_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -273,7 +282,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
                     sleep(10000);
 
-                // Position 2
+                    // Position 2
                 case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -307,6 +316,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -318,21 +328,6 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     //pixelMover.setPower(-1);
                     sleep(2000);
                     //pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
-
-/*
-                    gate.setPosition(1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
 */
@@ -393,6 +388,7 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
+/*
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -404,21 +400,6 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     //pixelMover.setPower(-1);
                     sleep(2000);
                     //pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
-
-                    /*
-                    gate.setPosition(1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    gate.setPosition(1);
-                    gate.setPosition(.135);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
 */
@@ -439,10 +420,84 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                     }
                     telemetry.update();
-
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
                     sleep(10000);
 
+                case STATE_LEFT_POS4_STEP1:
+
+                    stateTime.reset();
+                    telemetry.addData("Time 1 =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("Armup? pre => ", armUp);
+
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    telemetry.addData("Armup? post => ", armUp);
+
+                    if (!pixelDropped) {
+                        movePixelBoxToDrop(2.0);
+                        openGateServo(2.5);
+                        movePixelBoxToIntake(2.0);
+                        pixelDropped = true;
+
+                    }
+
+                    telemetry.update();
+
+
+                case STATE_LEFT_POS4_STEP2:
+                    stateTime.reset();
+                    telemetry.addData("Time 2 =>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("nextState => ", currentState);
+                    telemetry.addData("Armup? pre => ", armUp);
+
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
+                    telemetry.addData("Armup? post => ", armUp);
+                    telemetry.addData("Time 3=>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                    telemetry.addData("Before pixelMover. pixelBoxUp=>",pixelBoxUp);
+                    telemetry.addData("Before pixelMover. pixelBox Power=>",pixelMover.getPower());
+                    telemetry.update();
+                    sleep(1000);
+                    stateTime.reset();
+                    telemetry.addData("Before pixelMover...","");
+                    telemetry.addData("Reseting time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("ArmUp =>", armUp);
+                    telemetry.addData("pixelBoxUp =>", pixelBoxUp);
+                    telemetry.addData("Time 4=>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
+                    pixelMover.setPower(1);
+                    sleep(2000);
+                    telemetry.addData("Time 4=>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.update();
+                    sleep(500);
+
+                    if(armUp && !pixelBoxUp) {
+                        movePixelBoxToDrop(2);
+                        telemetry.addData("pixelMover power 1 => ", pixelMover.getPower());
+                        telemetry.update();
+                        if (pixelMover.getPower() == 1) {
+                            pixelBoxUp = true;
+                        }
+                    }
+                    sleep(2000);
+                    telemetry.addData("After pixelMover...","");
+                    telemetry.addData("Time 5=>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("gate Position 0 (moveGateServo) => ", gate.getPosition());
+                    openGateServo(2);//closed
+                    sleep(2000);
+                    telemetry.addData("gate Position 1 (moveGateServo) => ", gate.getPosition());
+                    //stateTime.reset();
+                    sleep(2000);
+                    telemetry.addData("gate Position 2 (moveGateServo) => ", gate.getPosition());
+                    //pixelMover.setPower(1);
+                    telemetry.addData("pixelMover Position 3 => ", pixelMover.getPower());
+                    //sleep(1000);
+                    telemetry.update();
+                    runArm(upSpeed, 138, 136);
                 case STATE_POS_REALIGN:
                     step = 5;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
@@ -478,13 +533,42 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
                     sleep(10000);
-
-
             } //End switch
         } //End while
         telemetry.update();
-
     } //End runopmode
+
+    public void openGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 6=>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(.135);
+        }
+    }
+
+    public void closeGateServo(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 7=>", String.format("%4.1f ", stateTime.time()));
+            gate.setPosition(1);
+        }
+    }
+
+    public void movePixelBoxToDrop(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 8=>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(-1);
+        }
+    }
+
+    public void movePixelBoxToIntake(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < 2 && opModeIsActive())  {
+            telemetry.addData("Time 9=>", String.format("%4.1f ", stateTime.time()));
+            pixelMover.setPower(1);
+        }
+    }
 
     private void initTfod() {
 
@@ -624,8 +708,8 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
             }
 
             for (Recognition recognition : currentRecognitions) {
-                 x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                 y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
                 if (x > 90 && x < 350) {
                     tfodEP = 2;
@@ -762,6 +846,10 @@ public class AutoLeftBlueBackDrop extends LinearOpMode {
 
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
+
+        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
             linearSlideLeft.setTargetPosition(leftTicks);

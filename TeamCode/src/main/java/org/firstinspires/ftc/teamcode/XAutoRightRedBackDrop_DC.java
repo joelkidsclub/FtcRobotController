@@ -6,12 +6,12 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -29,9 +29,9 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="TestBucketAuto", group = "drive")
-//@Disabled
-public class TestBucketAuto extends LinearOpMode {
+@Autonomous(name="DCAutoRightRedBackDrop", group = "drive")
+@Disabled
+public class XAutoRightRedBackDrop_DC extends LinearOpMode {
     /*
     elementPos for element position
        1 -> left
@@ -39,9 +39,7 @@ public class TestBucketAuto extends LinearOpMode {
        3 -> right
     */
 
-    private ElapsedTime stateTime = new ElapsedTime();  // Time into current state
-
-    int elementPos = 1; //Default to middle blue
+    int elementPos = 2; //Default to middle blue
     int targetTagBlue = 2;
     int targetTagRed = 2;
     boolean targetFound = false;
@@ -58,15 +56,14 @@ public class TestBucketAuto extends LinearOpMode {
     private DcMotor linearSlideRight  = null;
     static final int targetLeft = 771;
     static final int targetRight = 790;
-    private double upSpeed = .8;
-    boolean pixelBoxUp = false;
+    private double upSpeed = .4;
 
     //boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static final String TFOD_MODEL_ASSET = "Blue_Cube.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
     private static final String[] LABELS = {
-            "BlueProp"
+            "RedProp"
     };
 
     /**
@@ -101,8 +98,6 @@ public class TestBucketAuto extends LinearOpMode {
         STATE_LEFT_POS3_STEP3,
         STATE_LEFT_POS3_STEP4,
         STATE_LEFT_POS3_STEP5,
-        STATE_LEFT_POS4_STEP1,
-        STATE_LEFT_POS4_STEP2,
         STATE_POS_REALIGN,
         STATE_PARK,//
         IDLE//
@@ -110,8 +105,10 @@ public class TestBucketAuto extends LinearOpMode {
 
     Trajectory traj_INITIAL;
     Trajectory traj_STATE_LEFT_POS1_STEP1;
+    Trajectory traj_STATE_LEFT_POS1_STEP1b;
     Trajectory traj_STATE_LEFT_POS1_STEP2;
     Trajectory traj_STATE_LEFT_POS1_STEP3;
+    Trajectory traj_STATE_LEFT_POS1_STEP3b;
     Trajectory traj_STATE_LEFT_POS1_STEP4;
     Trajectory traj_STATE_LEFT_POS1_STEP5;
     Trajectory traj_STATE_LEFT_POS1_STEP6;
@@ -121,12 +118,14 @@ public class TestBucketAuto extends LinearOpMode {
     Trajectory traj_STATE_LEFT_POS2_STEP5;
     Trajectory traj_STATE_LEFT_POS3_STEP1;
     Trajectory traj_STATE_LEFT_POS3_STEP1b;
+    Trajectory traj_STATE_LEFT_POS3_STEP1c;
 
     Trajectory traj_STATE_LEFT_POS3_STEP2;
     Trajectory traj_STATE_LEFT_POS3_STEP4;
+    Trajectory traj_STATE_LEFT_POS3_STEP4b;
     Trajectory traj_STATE_LEFT_POS3_STEP5;
 
-    State currentState = State.STATE_INITIAL;
+    XAutoRightRedBackDrop_DC.State currentState = XAutoRightRedBackDrop_DC.State.STATE_INITIAL;
     int ver = 1;
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
@@ -146,22 +145,18 @@ public class TestBucketAuto extends LinearOpMode {
         boolean armUp = false;
 
         elementPos = initialize();
-        elementPos = 4; //Hardcoded for testing
+        //elementPos = 3; //Hardcoded for testing
 
         if (elementPos == 1) {
-            desiredTagId = 1;
+            desiredTagId = 4;
         }
 
         if (elementPos == 2) {
-            desiredTagId = 2;
+            desiredTagId = 5;
         }
 
         if (elementPos == 3) {
-            desiredTagId = 3;
-        }
-
-        if (elementPos == 4) {
-            desiredTagId = 3;
+            desiredTagId = 6;
         }
 
         telemetry.addData("Element position =>", elementPos);
@@ -192,8 +187,6 @@ public class TestBucketAuto extends LinearOpMode {
                             currentState = State.STATE_LEFT_POS2_STEP1;
                         else if (elementPos == 3)
                             currentState = State.STATE_LEFT_POS3_STEP1;
-                        else if (elementPos == 4)
-                            currentState = State.STATE_LEFT_POS4_STEP1;
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
@@ -215,6 +208,9 @@ public class TestBucketAuto extends LinearOpMode {
 
                     drive.followTrajectory(traj_INITIAL);
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1);
+                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1b);
+                    pixelDropper.setPosition(.45);
+                    sleep(1000);
 
                 case STATE_LEFT_POS1_STEP2:
                     telemetry.addData("currentState => ", currentState);
@@ -224,18 +220,34 @@ public class TestBucketAuto extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
-                    pixelDropper.setPosition(45.00);
                     sleep(1500);
-                    //pixelDropper.setPosition(45.00);
+                    if(!armUp) {
+                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                        armUp = true;
+                    }
 
+                    //gate.setPosition(1);
+                    //sleep(1000);
+                    //pixelMover.setPower(1);
+                    sleep(1000);
+                    pixelMover.setPower(-1);
+                    sleep(1000);
+                    //gate.setPosition(1);
+                    gate.setPosition(.135);
+                    //pixelMover.setPower(-1);
+                    sleep(2000);
+                    //pixelMover.setPower(1);
+                    pixelMover.setPower(1);
+                    sleep(1000);
                 case STATE_LEFT_POS1_STEP3:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_LEFT_POS1_STEP4;
+                        currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
+                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3b);
 
 
                 case STATE_LEFT_POS1_STEP4:
@@ -260,7 +272,7 @@ public class TestBucketAuto extends LinearOpMode {
                     //gate.setPosition(1);
                     gate.setPosition(.135);
                     //pixelMover.setPower(-1);
-                    sleep(2000);
+                    sleep(3000);
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
@@ -282,6 +294,7 @@ public class TestBucketAuto extends LinearOpMode {
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
                     }
+
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
                     sleep(10000);
 
@@ -308,7 +321,6 @@ public class TestBucketAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
-                    pixelDropper.setPosition(00);
                     sleep(1500);
                 case STATE_LEFT_POS2_STEP3:
                     if (!drive.isBusy()) {
@@ -319,16 +331,18 @@ public class TestBucketAuto extends LinearOpMode {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
+
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
                     sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    //gate.setPosition(1);
                     gate.setPosition(.135);
+                    sleep(1000);
+                    pixelMover.setPower(-1);
+                    //gate.setPosition(1);
+
                     //pixelMover.setPower(-1);
-                    sleep(2000);
+                    sleep(3000);
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
@@ -353,8 +367,8 @@ public class TestBucketAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
-                    sleep(1500);
-                    sleep(10000);
+                    sleep(15000);
+
 
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -366,9 +380,10 @@ public class TestBucketAuto extends LinearOpMode {
 
                     drive.followTrajectory(traj_INITIAL);
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
-                    drive.turn(Math.toRadians(-90));
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1b);
                     pixelDropper.setPosition(45.00);
+                    sleep(1000);
+                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1c);
                     sleep(1500);
                 case STATE_LEFT_POS3_STEP2:
                     telemetry.addData("currentState => ", currentState);
@@ -380,16 +395,11 @@ public class TestBucketAuto extends LinearOpMode {
 
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
                     sleep(1500);
-
-                case STATE_LEFT_POS3_STEP3:
-                    if (!drive.isBusy()) {
-                        currentState = State.STATE_LEFT_POS3_STEP4;
-                        telemetry.addData("nextState => ", currentState);
-                    }
                     if(!armUp) {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
+
                     //gate.setPosition(1);
                     //sleep(1000);
                     //pixelMover.setPower(1);
@@ -403,95 +413,19 @@ public class TestBucketAuto extends LinearOpMode {
                     //pixelMover.setPower(1);
                     pixelMover.setPower(1);
                     sleep(1000);
-                case STATE_LEFT_POS3_STEP4:
-                    telemetry.addData("currentState => ", currentState);
-                    if (!drive.isBusy()) {
-                        currentState = State.STATE_LEFT_POS3_STEP5;
-                        telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
-                    sleep(1500);
-                case STATE_LEFT_POS3_STEP5:
+                case STATE_LEFT_POS3_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
                     }
                     telemetry.update();
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
-                    sleep(10000);
 
-                case STATE_LEFT_POS4_STEP1:
-                    stateTime.reset();
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("Armup? pre => ", armUp);
+                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
+                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4b);
+                    sleep(15000);
 
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-                    telemetry.addData("Armup? post => ", armUp);
-
-                    movePixelBoxToDrop(2.0);
-                    openGateServo(2.0);
-                    movePixelBoxToIntake(2.0);
-                    telemetry.update();
-                    currentState = State.IDLE;
-
-                case STATE_LEFT_POS4_STEP2:
-                    stateTime.reset();
-                    telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
-                    telemetry.addData("nextState => ", currentState);
-                    telemetry.addData("Armup? pre => ", armUp);
-
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-                    telemetry.addData("Armup? post => ", armUp);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
-                    telemetry.addData("Before pixelMover. pixelBoxUp=>",pixelBoxUp);
-                    telemetry.addData("Before pixelMover. pixelBox Power=>",pixelMover.getPower());
-                    telemetry.update();
-                    sleep(1000);
-                    stateTime.reset();
-                    telemetry.addData("Before pixelMover...","");
-                    telemetry.addData("Reseting time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("ArmUp =>", armUp);
-                    telemetry.addData("pixelBoxUp =>", pixelBoxUp);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.update();
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.update();
-                    sleep(500);
-
-                    if(armUp && !pixelBoxUp) {
-                        movePixelBoxToDrop(2);
-                        telemetry.addData("pixelMover power 1 => ", pixelMover.getPower());
-                        telemetry.update();
-                        if (pixelMover.getPower() == 1) {
-                            pixelBoxUp = true;
-                        }
-                    }
-                    sleep(2000);
-                    telemetry.addData("After pixelMover...","");
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("gate Position 0 (moveGateServo) => ", gate.getPosition());
-                    openGateServo(2);//closed
-                    sleep(2000);
-                    telemetry.addData("gate Position 1 (moveGateServo) => ", gate.getPosition());
-                    //stateTime.reset();
-                    sleep(2000);
-                    telemetry.addData("gate Position 2 (moveGateServo) => ", gate.getPosition());
-                    //pixelMover.setPower(1);
-                    telemetry.addData("pixelMover Position 3 => ", pixelMover.getPower());
-                    //sleep(1000);
-                    telemetry.update();
-                    runArm(upSpeed, 138, 136);
                 case STATE_POS_REALIGN:
                     step = 5;
                     telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
@@ -527,42 +461,14 @@ public class TestBucketAuto extends LinearOpMode {
                     telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                     telemetry.update();
                     sleep(10000);
+
+
+
             } //End switch
         } //End while
         telemetry.update();
+
     } //End runopmode
-
-    public void openGateServo(double tTimeSec){
-        stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-            gate.setPosition(.135);
-        }
-    }
-
-    public void closeGateServo(double tTimeSec){
-        stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-            gate.setPosition(1);
-        }
-    }
-
-    public void movePixelBoxToDrop(double tTimeSec){
-        stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-            pixelMover.setPower(-1);
-        }
-    }
-
-    public void movePixelBoxToIntake(double tTimeSec){
-        stateTime.reset();
-        while (stateTime.time() < 2) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-            pixelMover.setPower(1);
-        }
-    }
 
     private void initTfod() {
 
@@ -630,35 +536,32 @@ public class TestBucketAuto extends LinearOpMode {
                 .back(2)
                 .build();
         traj_STATE_LEFT_POS1_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .strafeRight(13)
+                .strafeLeft(13)
                 .build();
-        traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
-                .back(15)
+        traj_STATE_LEFT_POS1_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
+                .lineToLinearHeading(new Pose2d(-35.75,1, Math.toRadians(90)))
+                .build();
+        traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1b.end())
+                .lineToLinearHeading(new Pose2d(-37,41.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS1_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP2.end())
-                .forward(5)
+                .strafeLeft(32)
                 .build();
-        traj_STATE_LEFT_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
-                .lineToLinearHeading(new Pose2d(-19,-40.5, Math.toRadians(90)))
-                .build();
-        traj_STATE_LEFT_POS1_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP4.end())
-                .strafeRight(24)
-                .build();
-        traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
-                .back(10)
+        traj_STATE_LEFT_POS1_STEP3b = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
+                .back(15)
                 .build();
 
 // Position 2
         traj_STATE_LEFT_POS2_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .lineToLinearHeading(new Pose2d(-44,-17, Math.toRadians(-90)))
+                .back(23.25)
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP1.end())
-                .lineToLinearHeading(new Pose2d(-28.5,-40.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-24.25,40.5, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP2.end())
-                .strafeRight(28)
+                .strafeLeft(28)
                 .build();
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
@@ -666,18 +569,21 @@ public class TestBucketAuto extends LinearOpMode {
                 .build();
 // Position 3
         traj_STATE_LEFT_POS3_STEP1 = drive.trajectoryBuilder(traj_INITIAL.end())
-                .back(26)
+                .strafeLeft(7.5)
                 .build();
-        traj_STATE_LEFT_POS3_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end().plus(new Pose2d(0, 0, Math.toRadians(-90))))
-                .back(3)
+        traj_STATE_LEFT_POS3_STEP1b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end())
+                .back(17.75)
                 .build();
-        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1b.end())
-                .lineToLinearHeading(new Pose2d(-32,-38,Math.toRadians(90)))
+        traj_STATE_LEFT_POS3_STEP1c = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1b.end())
+                .forward(4)
+                .build();
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1c.end())
+                .lineToLinearHeading(new Pose2d(-21,39.75,Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
-                .strafeRight(35)
+                .strafeLeft(24)
                 .build();
-        traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
+        traj_STATE_LEFT_POS3_STEP4b = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
                 .back(10)
                 .build();
 
@@ -702,8 +608,8 @@ public class TestBucketAuto extends LinearOpMode {
             }
 
             for (Recognition recognition : currentRecognitions) {
-                 x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                 y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
                 if (x > 90 && x < 350) {
                     tfodEP = 2;
@@ -840,10 +746,6 @@ public class TestBucketAuto extends LinearOpMode {
 
         linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
-
-        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         // Ensure that the OpMode is still active
         if (opModeIsActive()) {
             linearSlideLeft.setTargetPosition(leftTicks);

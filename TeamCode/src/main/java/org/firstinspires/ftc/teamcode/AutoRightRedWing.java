@@ -44,6 +44,8 @@ public class AutoRightRedWing extends LinearOpMode {
     int targetTagRed = 2;
     boolean targetFound = false;
     boolean elementDetected = false;
+    boolean pixelDropped = false;
+
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
@@ -59,7 +61,6 @@ public class AutoRightRedWing extends LinearOpMode {
     private double upSpeed = .8;
     boolean pixelBoxUp = false;
     private ElapsedTime stateTime = new ElapsedTime();  // Time into current state
-    boolean pixelDropped = false;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private static final String TFOD_MODEL_ASSET = "Red_Cube.tflite";
@@ -158,12 +159,12 @@ public class AutoRightRedWing extends LinearOpMode {
         distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
-        boolean pixelDropped = false;
+
         boolean armUp = false;
 
         elementPos = initialize();
         //elementPos = 3; //Hardcoded for testing
-        elementPos = 4 ;
+        //elementPos = 4 ;
 
         if (elementPos == 1) {
             desiredTagId = 4;
@@ -194,6 +195,7 @@ public class AutoRightRedWing extends LinearOpMode {
         if (isStopRequested()) return;
 
         boolean done = false;
+        pixelDropper.setPosition(0);
 
         while (!isStopRequested() && opModeIsActive() && !done) {
             telemetry.addData("Current state 1=> ", currentState);
@@ -241,10 +243,10 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
-                    pixelDropper.setPosition(45.00);
-                    sleep(1500);
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2b);
+                    dropPurple(1.5);
                     //pixelDropper.setPosition(45.00);
+                    //sleep(1500);
+                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2b);
 
                 case STATE_LEFT_POS1_STEP3:
                     telemetry.addData("currentState => ", currentState);
@@ -254,8 +256,6 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
 
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
-
-
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -266,16 +266,12 @@ public class AutoRightRedWing extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP4);
                     drive.turn(Math.toRadians(-90));
 
-
-                    pixelDropped = true;
-
                 case STATE_LEFT_POS1_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP6;
                         telemetry.addData("nextState => ", currentState);
                     }
-
                     drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
 
                 case STATE_LEFT_POS1_STEP6:
@@ -292,19 +288,8 @@ public class AutoRightRedWing extends LinearOpMode {
                         armUp = true;
                     }
 
-                    //gate.setPosition(1);
-                    //sleep(1000);
-                    //pixelMover.setPower(1);
-                    sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    //gate.setPosition(1);
-                    gate.setPosition(.135);
-                    //pixelMover.setPower(-1);
-                    sleep(2000);
-                    //pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
+                    dropPixel();
+
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -328,8 +313,9 @@ public class AutoRightRedWing extends LinearOpMode {
 
                     drive.followTrajectory(traj_INITIAL);
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP1);
-                    pixelDropper.setPosition(45.00);
-                    sleep(1500);
+                    dropPurple(1.5);
+                    //pixelDropper.setPosition(45.00);
+                    //sleep(1500);
 
                 case STATE_LEFT_POS2_STEP2:
                     telemetry.addData("currentState => ", currentState);
@@ -350,24 +336,14 @@ public class AutoRightRedWing extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP3);
                     drive.followTrajectory(traj_STATE_LEFT_POS2_STEP3b);
                     sleep(1000);
+
                     if(!armUp) {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
 
-                    //gate.setPosition(1);
-                    //sleep(1000);
-                    //pixelMover.setPower(1);
-                    sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    //gate.setPosition(1);
-                    gate.setPosition(.135);
-                    //pixelMover.setPower(-1);
-                    sleep(2000);
-                    //pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
+                    dropPixel();
+
                 case STATE_LEFT_POS2_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
@@ -406,8 +382,9 @@ public class AutoRightRedWing extends LinearOpMode {
                     }
                     telemetry.update();
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
-                    pixelDropper.setPosition(45);
-                    sleep(1000);
+                    dropPurple(1.5);
+                    //pixelDropper.setPosition(45);
+                    //sleep(1000);
                 case STATE_LEFT_POS3_STEP3:
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP4;
@@ -452,19 +429,7 @@ public class AutoRightRedWing extends LinearOpMode {
                         armUp = true;
                     }
 
-                    //gate.setPosition(1);
-                    //sleep(1000);
-                    //pixelMover.setPower(1);
-                    sleep(1000);
-                    pixelMover.setPower(-1);
-                    sleep(1000);
-                    //gate.setPosition(1);
-                    gate.setPosition(.135);
-                    //pixelMover.setPower(-1);
-                    sleep(2000);
-                    //pixelMover.setPower(1);
-                    pixelMover.setPower(1);
-                    sleep(1000);
+                    dropPixel();
 
                 case STATE_LEFT_POS3_STEP7:
                     telemetry.addData("currentState => ", currentState);
@@ -486,79 +451,24 @@ public class AutoRightRedWing extends LinearOpMode {
                     drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8b);
                     sleep(10000);
                 case STATE_LEFT_POS4_STEP1:
+                    currentState = State.STATE_POS_REALIGN;
                     stateTime.reset();
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+                    telemetry.addData("Time 1=>", String.format("%4.1f ", stateTime.time()));
                     telemetry.addData("Armup? pre => ", armUp);
-
                     if(!armUp) {
                         runArm(upSpeed, targetLeft - 138, targetRight - 136);
                         armUp = true;
                     }
                     telemetry.addData("Armup? post => ", armUp);
-
-                    if (!pixelDropped) {
-                        movePixelBoxToDrop(2.0);
-                        openGateServo(2.0);
-                        movePixelBoxToIntake(2.0);
-                        pixelDropped = true;
-
-                    }
-
+                    dropPixel();
                     telemetry.update();
-                    currentState = State.IDLE;
 
                 case STATE_LEFT_POS4_STEP2:
+                    currentState = State.STATE_POS_REALIGN;
                     stateTime.reset();
                     telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
                     telemetry.addData("nextState => ", currentState);
                     telemetry.addData("Armup? pre => ", armUp);
-
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-                    telemetry.addData("Armup? post => ", armUp);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()) + currentState.toString());
-                    telemetry.addData("Before pixelMover. pixelBoxUp=>",pixelBoxUp);
-                    telemetry.addData("Before pixelMover. pixelBox Power=>",pixelMover.getPower());
-                    telemetry.update();
-                    sleep(1000);
-                    stateTime.reset();
-                    telemetry.addData("Before pixelMover...","");
-                    telemetry.addData("Reseting time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("ArmUp =>", armUp);
-                    telemetry.addData("pixelBoxUp =>", pixelBoxUp);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.update();
-                    pixelMover.setPower(1);
-                    sleep(2000);
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.update();
-                    sleep(500);
-
-                    if(armUp && !pixelBoxUp) {
-                        movePixelBoxToDrop(2);
-                        telemetry.addData("pixelMover power 1 => ", pixelMover.getPower());
-                        telemetry.update();
-                        if (pixelMover.getPower() == 1) {
-                            pixelBoxUp = true;
-                        }
-                    }
-                    sleep(2000);
-                    telemetry.addData("After pixelMover...","");
-                    telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("gate Position 0 (moveGateServo) => ", gate.getPosition());
-                    openGateServo(2);//closed
-                    sleep(2000);
-                    telemetry.addData("gate Position 1 (moveGateServo) => ", gate.getPosition());
-                    //stateTime.reset();
-                    sleep(2000);
-                    telemetry.addData("gate Position 2 (moveGateServo) => ", gate.getPosition());
-                    //pixelMover.setPower(1);
-                    telemetry.addData("pixelMover Position 3 => ", pixelMover.getPower());
-                    //sleep(1000);
-                    telemetry.update();
-                    runArm(upSpeed, 138, 136);
 
                 case STATE_POS_REALIGN:
                     //step = 5;
@@ -604,35 +514,60 @@ public class AutoRightRedWing extends LinearOpMode {
 
     } //End runopmode
 
+    public void dropPurple(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time drop purple=>", String.format("%4.1f ", stateTime.time()));
+            pixelDropper.setPosition(45);
+        }
+    }
+
+    public void purpleToInitial(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time purple to initial=>", String.format("%4.1f ", stateTime.time()));
+            pixelDropper.setPosition(0);
+        }
+    }
+
+    public void dropPixel() {
+        if (!pixelDropped) {
+            movePixelBoxToDrop(1.75);
+            openGateServo(3);
+            movePixelBoxToIntake(1.5);
+            pixelDropped = true;
+
+        }
+    }
 
     public void openGateServo(double tTimeSec){
         stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 6=>", String.format("%4.1f ", stateTime.time()));
             gate.setPosition(.135);
         }
     }
 
     public void closeGateServo(double tTimeSec){
         stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 7=>", String.format("%4.1f ", stateTime.time()));
             gate.setPosition(1);
         }
     }
 
     public void movePixelBoxToDrop(double tTimeSec){
         stateTime.reset();
-        while (stateTime.time() < tTimeSec) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 8=>", String.format("%4.1f ", stateTime.time()));
             pixelMover.setPower(-1);
         }
     }
 
     public void movePixelBoxToIntake(double tTimeSec){
         stateTime.reset();
-        while (stateTime.time() < 2) {
-            telemetry.addData("Time =>", String.format("%4.1f ", stateTime.time()));
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time 9=>", String.format("%4.1f ", stateTime.time()));
             pixelMover.setPower(1);
         }
     }
@@ -643,7 +578,7 @@ public class AutoRightRedWing extends LinearOpMode {
     }   // end method initTfod()
 
     public int initialize(){
-        pixelDropper.setPosition(0);
+
         int tfodEP = 1;
         //pixelMover.setPower(1);
         //sleep(2000);

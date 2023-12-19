@@ -600,7 +600,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
 
     public int initialize(){
 
-        int tfodEP = 1;
+        int tfodEP = 3;
         //pixelMover.setPower(1);
         //sleep(2000);
         //gate.setPosition(1);
@@ -743,7 +743,7 @@ public class AutoLeftBlueWing extends LinearOpMode {
         while(!isStarted() && !isStopRequested()){
             initTfod();
             tfod.setZoom(1.25);
-            tfodEP = 1;
+            tfodEP = 3;
             //sets element position depending on the position of the detected element
             //if object isn't detected, we are assuming it is element = 3 (default right)
             double x = 0;
@@ -753,23 +753,24 @@ public class AutoLeftBlueWing extends LinearOpMode {
             telemetry.addData("# Objects Detected", currentRecognitions.size());
 
             if(currentRecognitions.size() == 0) {
-                tfodEP = 1;
+                tfodEP = 3;
             }
 
             for (Recognition recognition : currentRecognitions) {
                 x = (recognition.getLeft() + recognition.getRight()) / 2 ;
                 y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-                if (x > 90 && x < 350) {
-                    tfodEP = 2;
-                    telemetry.addData("- Element Position =>", tfodEP);
+                if (x < 200) {
+                    tfodEP = 1;
+                    telemetry.addData("- Element Position Left =>", tfodEP);
                     //telemetry.update();
-                } else if (x > 400) {
-                    tfodEP = 3;
-                    telemetry.addData("- Element Position =>", tfodEP);
+                } else if (x > 200 && x < 540) {
+                    tfodEP = 2;
+                    telemetry.addData("- Element Position Middle =>", tfodEP);
                     //telemetry.update();
                 } else {
-                    telemetry.addData("- Element Position =>", tfodEP);
+                    tfodEP = 3;
+                    telemetry.addData("- Element Position Right =>", tfodEP);
                 }
 
                 telemetry.addData(""," ");

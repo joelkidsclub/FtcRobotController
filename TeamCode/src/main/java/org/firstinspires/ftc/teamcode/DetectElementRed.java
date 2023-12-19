@@ -176,9 +176,10 @@ public class DetectElementRed extends LinearOpMode {
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
-
+        int cnt;
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
+        cnt = currentRecognitions.size();
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
@@ -191,7 +192,20 @@ public class DetectElementRed extends LinearOpMode {
             telemetry.addData("- Size => ", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             //telemetry.addData("- X =>",(recognition.getLeft() + recognition.getRight()) / 2);
 
+            if(x < 200) {
+                telemetry.addData("Left ..."," ");
+            } else if (x > 200 && x < 540) {
+                telemetry.addData("Middle ..."," ");
+            } else {
+                telemetry.addData("Right ..."," ");
+            }
+
+
         }   // end for() loop
+
+        if (currentRecognitions.size() == 0) {
+            telemetry.addData("Right.."," ");
+        }
 
     }   // end method telemetryTfod()
 

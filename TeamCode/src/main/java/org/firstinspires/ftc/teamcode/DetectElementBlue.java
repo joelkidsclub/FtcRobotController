@@ -189,6 +189,14 @@ public class DetectElementBlue extends LinearOpMode {
             telemetry.addData("- Size => ", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             //telemetry.addData("- X =>",(recognition.getLeft() + recognition.getRight()) / 2);
 
+            if(x < 200) {
+                telemetry.addData("Left ..."," ");
+            } else if (x > 200 && x < 540) {
+                telemetry.addData("Middle ..."," ");
+            } else {
+                telemetry.addData("Right ..."," ");
+            }
+
         }   // end for() loop
 
     }   // end method telemetryTfod()

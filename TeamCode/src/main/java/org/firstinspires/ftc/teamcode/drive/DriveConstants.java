@@ -35,9 +35,10 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(30, 0, 8,
-            13.369913992480187);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(30, 0, 10,
+            12); //(January)
     //getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
+    //p=30; d=8; f=13.369913992480187 Prep for jan
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -48,8 +49,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.88976; // in
-    public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 15.16;//14.5; // in
+    public static double GEAR_RATIO = 1.0167; // output (wheel) speed / input (motor) speed (January)
+    public static double TRACK_WIDTH = 15.3;//(January)//15.16;//14.5; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -96,8 +97,8 @@ public class DriveConstants {
     //Voltage Compensated kF: 13.50290526770119 //11.721254006410254
     public static double MAX_VEL = 47.4088158244;//52.48180821614297
     public static double MAX_ACCEL = 47.4088158244;//52.48180821614297
-    public static double MAX_ANG_VEL = Math.toRadians(184.02607784577722);
-    public static double MAX_ANG_ACCEL = Math.toRadians(184.02607784577722);
+    public static double MAX_ANG_VEL = Math.toRadians(187.068624243748726);//(January)//Math.toRadians(184.02607784577722);
+    public static double MAX_ANG_ACCEL =Math.toRadians(187.068624243748726);//(January) //Math.toRadians(184.02607784577722);
 
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
     public static RevHubOrientationOnRobot.UsbFacingDirection  USB_FACING_DIR  = RevHubOrientationOnRobot.UsbFacingDirection.UP;

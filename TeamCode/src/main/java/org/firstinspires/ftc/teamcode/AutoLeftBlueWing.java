@@ -219,9 +219,10 @@ public class AutoLeftBlueWing extends LinearOpMode {
                         telemetry.addData("STEP 1: STATE_INITIAL. Next step=> ",currentState);
                         telemetry.addData("Element position => ",elementPos);
                         telemetry.update();
+                        visionPortal.setProcessorEnabled(tfod, true);
+                        visionPortal.setProcessorEnabled(aprilTag, false);
+
                     }
-                    visionPortal.setProcessorEnabled(tfod, true);
-                    visionPortal.setProcessorEnabled(aprilTag, false);
                     break;
 
                 case STATE_LEFT_POS1_STEP1:
@@ -229,307 +230,333 @@ public class AutoLeftBlueWing extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP2;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_INITIAL);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1);
                     }
-
-                    drive.followTrajectory(traj_INITIAL);
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1);
+                    break;
 
                 case STATE_LEFT_POS1_STEP2:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP3;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
+                        dropPurple(1.5);
+                        //pixelDropper.setPosition(45.00);
+                        //sleep(1500);
                     }
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
-                    dropPurple(1.5);
-                    //pixelDropper.setPosition(45.00);
-                    //sleep(1500);
-
+                    break;
                 case STATE_LEFT_POS1_STEP3:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
                     }
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
-
+                    break;
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP5;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP4);
                     }
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP4);
+                    break;
 
                 case STATE_LEFT_POS1_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP6;
                         telemetry.addData("nextState => ", currentState);
-                    }
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
+
+                    }
+                    break;
 
                 case STATE_LEFT_POS1_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
+
+                        if(!armUp) {
+                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            armUp = true;
+                        }
+                        dropPixel();
+
+
                     }
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
-
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-                    dropPixel();
+                    break;
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP8;
                         telemetry.addData("nextState => ", currentState);
-                    }
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP7);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP7);
+
+                    }
+                    break;
 
                 case STATE_LEFT_POS1_STEP8:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP8);
                     }
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS1_STEP8);
-                    sleep(10000);
+                    break;
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP2;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_INITIAL);
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP1);
-                    dropPurple(1.5);
-                    //pixelDropper.setPosition(45.00);
-                    //sleep(1500);
+                        drive.followTrajectory(traj_INITIAL);
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP1);
+                        dropPurple(1.5);
+                        //pixelDropper.setPosition(45.00);
+                        //sleep(1500);
+
+                    }
+                    break;
 
                 case STATE_LEFT_POS2_STEP2:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP3;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
-                    sleep(1500);
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
+                    }
+                    break;
                 case STATE_LEFT_POS2_STEP3:
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP3);
+
                     }
-                    telemetry.update();
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP3);
-                    sleep(1500);
+                    break;
                 case STATE_LEFT_POS2_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP5;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP4);
+
                     }
-                    telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP4);
-                    sleep(1500);
-
+                    break;
                 case STATE_LEFT_POS2_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP6;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
+
+                        if(!armUp) {
+                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            armUp = true;
+                        }
+                        dropPixel();
                     }
-                    telemetry.update();
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
-
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
-                    }
-                    dropPixel();
-
+                    break;
                 case STATE_LEFT_POS2_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
                     }
-                    telemetry.update();
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
-                    sleep(1500);
+                    break;
                 case STATE_LEFT_POS2_STEP7:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP7);
                     }
-                    telemetry.update();
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS2_STEP7);
-                    sleep(10000);
-
+                    break;
                 // Position 3
                 case STATE_LEFT_POS3_STEP1:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP2;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_INITIAL);
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
-                    sleep(500);
+                        drive.followTrajectory(traj_INITIAL);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
+                        sleep(500);
+                    }
+
+                    break;
                 case STATE_LEFT_POS3_STEP2:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP3;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
-                    dropPurple(1.5);
-                    //pixelDropper.setPosition(.45);
-                    //sleep(750);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
+                        dropPurple(1.5);
+                        //pixelDropper.setPosition(.45);
+                        //sleep(750);
+
+                    }
+                    break;
 
                 case STATE_LEFT_POS3_STEP3:
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP3);
                     }
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP3);
-                    sleep(1500);
 
-
+                    break;
                 case STATE_LEFT_POS3_STEP4:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP5;
                         telemetry.addData("nextState => ", currentState);
+                        telemetry.update();
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
                     }
-                    telemetry.update();
-
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP4);
-                    sleep(1500);
+                    break;
                 case STATE_LEFT_POS3_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP6;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
-                    sleep(2500);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
+                    }
+                    break;
                 case STATE_LEFT_POS3_STEP6:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP7;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
 
-
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
+                        telemetry.update();
+                        if(!armUp) {
+                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            armUp = true;
+                        }
+                        dropPixel();
                     }
-                    dropPixel();
+
+                    break;
                 case STATE_LEFT_POS3_STEP7:
-                    telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
+                        telemetry.addData("currentState => ", currentState);
+
                         currentState = State.STATE_LEFT_POS3_STEP8;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP7);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP7);
+
+                    }
+                    break;
                 case STATE_LEFT_POS3_STEP8:
-                    telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
+                        telemetry.addData("currentState => ", currentState);
+
                         currentState = State.STATE_POS_REALIGN;
                         telemetry.addData("nextState => ", currentState);
-                    }
-                    telemetry.update();
+                        telemetry.update();
 
-                    drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8);
-                    sleep(10000);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8);
+
+                    }
+                    break;
                 case STATE_LEFT_POS4_STEP1:
-                    currentState = State.STATE_POS_REALIGN;
-                    stateTime.reset();
-                    telemetry.addData("Time 1=>", String.format("%4.1f ", stateTime.time()));
-                    telemetry.addData("Armup? pre => ", armUp);
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_POS_REALIGN;
+                        stateTime.reset();
+                        telemetry.addData("Time 1=>", String.format("%4.1f ", stateTime.time()));
+                        telemetry.addData("Armup? pre => ", armUp);
 
-                    if(!armUp) {
-                        runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                        armUp = true;
+                        if(!armUp) {
+                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            armUp = true;
+                        }
+                        telemetry.addData("Armup? post => ", armUp);
+                        dropPixel();
+                        telemetry.update();
                     }
-                    telemetry.addData("Armup? post => ", armUp);
-                    dropPixel();
-                    telemetry.update();
-
+                    break;
                 case STATE_LEFT_POS4_STEP2:
-                    currentState = State.STATE_POS_REALIGN;
-                    stateTime.reset();
-                    telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
-                    telemetry.addData("nextState => ", currentState);
-                    telemetry.addData("Armup? pre => ", armUp);
-
+                    if (!drive.isBusy()) {
+                        currentState = State.STATE_POS_REALIGN;
+                        stateTime.reset();
+                        telemetry.addData("0", String.format("%4.1f ", stateTime.time()) + currentState.toString());
+                        telemetry.addData("nextState => ", currentState);
+                        telemetry.addData("Armup? pre => ", armUp);
+                    }
+                    break;
                 case STATE_POS_REALIGN:
-                    step = 5;
-                    telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
+                    if (!drive.isBusy()) {
+                        telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
 
-                    visionPortal.setProcessorEnabled(tfod, false);
-                    visionPortal.setProcessorEnabled(aprilTag, true);
-                    telemetry.update();
-                    detectAprilTag();
-                    telemetryAprilTag();
+                        visionPortal.setProcessorEnabled(tfod, false);
+                        visionPortal.setProcessorEnabled(aprilTag, true);
+                        telemetry.update();
+                        detectAprilTag();
+                        telemetryAprilTag();
 
-                    if (!drive.isBusy() && targetFound) {
                         currentState = State.STATE_PARK;
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
+                    break;
 
                 case STATE_PARK:
                     step = 99;
-                    telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
 
                     if (!drive.isBusy()) {
+                        telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                         currentState = State.IDLE;
                         telemetry.addData("STEP 99: STATE_PARK", "...");
+                        telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
+                        telemetry.update();
                     }
-                    telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
-                    telemetry.update();
+                    break;
 
                 case IDLE:
                     step = 100;
                     //Do Nothing
-                    done = true;
-                    telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
-                    telemetry.update();
-                    sleep(10000);
-
+                    if (!drive.isBusy()) {
+                        done = true;
+                        telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
+                        telemetry.update();
+                    }
+                    break;
             } //End switch
+
+            drive.update();
+            telemetry.addData("Current Pose X =>", drive.getPoseEstimate().getX());
+            telemetry.addData("Current Pose Y =>", drive.getPoseEstimate().getY());
+            telemetry.addData("Current Pose Heading =>", drive.getPoseEstimate().getHeading());
+
         } //End while
         telemetry.update();
 

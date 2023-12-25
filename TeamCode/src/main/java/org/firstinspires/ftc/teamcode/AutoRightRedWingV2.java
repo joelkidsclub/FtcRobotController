@@ -77,7 +77,6 @@ public class AutoRightRedWingV2 extends LinearOpMode {
     /**
      * The variable to store our instance of the vision portal.
      */
-    private VisionPortal myVisionPortal;
 
     int step = 0;
 
@@ -261,7 +260,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 case STATE_LEFT_POS1_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_POS_REALIGN;//STATE_LEFT_POS1_STEP6;
+                        currentState = State.STATE_LEFT_POS1_STEP6;
                         telemetry.addData("nextState => ", currentState);
 
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
@@ -335,7 +334,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 case STATE_LEFT_POS2_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_POS_REALIGN;//STATE_LEFT_POS2_STEP6;
+                        currentState = State.STATE_LEFT_POS2_STEP6;//STATE_LEFT_POS2_STEP6;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP5);
                     }
@@ -406,7 +405,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 case STATE_LEFT_POS3_STEP5:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
-                        currentState = State.STATE_POS_REALIGN;//STATE_LEFT_POS3_STEP6;
+                        currentState = State.STATE_LEFT_POS3_STEP6;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS3_STEP5);
                     }
@@ -487,6 +486,8 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                     step = 99;
                     visionPortal.setProcessorEnabled(tfod, false);
                     visionPortal.setProcessorEnabled(aprilTag, false);
+                    visionPortal.close();
+
                     if (!drive.isBusy()) {
                         telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                         currentState = State.IDLE;
@@ -536,7 +537,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
     public void dropPixel() {
         if (!pixelDropped) {
             movePixelBoxToDrop(1.75);
-            openGateServo(3);
+            openGateServo(2);
             movePixelBoxToIntake(1.5);
             pixelDropped = true;
 
@@ -659,11 +660,11 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
         traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-22.5,85, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-32,87, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP6.end())
-                .strafeLeft(30)
+                .strafeRight(21)
                 .build();
 
         traj_STATE_LEFT_POS1_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP7.end())
@@ -676,23 +677,23 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-40,-15, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-40.5,-14, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP2.end())
-                .lineToLinearHeading(new Pose2d(-50,-20, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-50.5,-20, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
                 //.back(96)
-                .lineToLinearHeading(new Pose2d(-50,75, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-50.5,75, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
                 .lineToLinearHeading(new Pose2d(-27.5,86.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
-                .strafeLeft(25)
+                .strafeRight(25)
                 .build();
         traj_STATE_LEFT_POS2_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP7.end())
                 .back(12)
@@ -712,10 +713,10 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-32,86.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-22,86.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP6.end())
-                .strafeLeft(21)
+                .strafeRight(30)
                 .build();
         traj_STATE_LEFT_POS3_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP7.end())
                 .back(12)
@@ -808,18 +809,18 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
         // Tell the driver what we see, and what to do.
         if (targetFound) {
-            sleep(500);
             telemetry.addData("id","matches");
             //telemetry.update();
 
         } else {
-            sleep(500);
             telemetry.addData("\n>","find valid target\n");
             //telemetry.update();
         }
 
         telemetry.addData("Exit Detect ATag", "...");
         telemetry.update();
+        sleep(500);
+
     }
 
     /**

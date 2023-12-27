@@ -621,15 +621,15 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_INITIAL_1 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-33,37, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-31.5,36, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP3 = drive.trajectoryBuilder(traj_INITIAL_1.end())
-                .lineToLinearHeading(new Pose2d(-27,-0.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-27,5.5, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
-                .forward(10)
+                .forward(14)
                 .build();
 
 

@@ -645,7 +645,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP3 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-45,-15, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-40,-15, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3.end())
@@ -654,7 +654,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
 
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
-                .strafeLeft(45)
+                .strafeLeft(43)
                 .build();
 
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
@@ -679,7 +679,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
-                .forward(26)
+                .forward(30)
                 .build();
 
         //Center - January - .lineToLinearHeading(new Pose2d(-27.5,-38, Math.toRadians(90)))

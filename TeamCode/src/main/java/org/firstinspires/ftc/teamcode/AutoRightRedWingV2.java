@@ -229,6 +229,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         visionPortal.setProcessorEnabled(aprilTag, false);
 
                     }
+                    closeGate();
                     break;
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -542,6 +543,10 @@ public class AutoRightRedWingV2 extends LinearOpMode {
             pixelDropped = true;
 
         }
+    }
+
+    public void closeGate() {
+        gate.setPosition(.88);
     }
 
     public void openGateServo(double tTimeSec){

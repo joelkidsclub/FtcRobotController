@@ -231,6 +231,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("Element position => ",elementPos);
                         telemetry.update();
                     }
+                    closeGate();
                     break;
 //Position left
                 case STATE_LEFT_POS1_STEP1:
@@ -524,6 +525,10 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
             telemetry.addData("Time purple to initial=>", String.format("%4.1f ", stateTime.time()));
             pixelDropper.setPosition(0);
         }
+    }
+
+    public void closeGate() {
+        gate.setPosition(.88);
     }
 
     public void openGateServo(double tTimeSec){

@@ -230,7 +230,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         visionPortal.setProcessorEnabled(aprilTag, false);
 
                     }
-                    closeGate();
+                    //closeGate();
                     break;
                 case STATE_LEFT_POS1_STEP1:
                     telemetry.addData("currentState => ", currentState);
@@ -492,7 +492,9 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
 
                 case STATE_PARK:
                     step = 99;
-
+                    visionPortal.setProcessorEnabled(tfod, false);
+                    visionPortal.setProcessorEnabled(aprilTag, false);
+                    visionPortal.close();
                     if (!drive.isBusy()) {
                         telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                         currentState = State.IDLE;

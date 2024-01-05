@@ -231,7 +231,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("Element position => ",elementPos);
                         telemetry.update();
                     }
-                    closeGate();
+                    //closeGate();
                     break;
 //Position left
                 case STATE_LEFT_POS1_STEP1:
@@ -459,6 +459,9 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                     break;
                 case STATE_PARK:
                     step = 99;
+                    visionPortal.setProcessorEnabled(tfod, false);
+                    visionPortal.setProcessorEnabled(aprilTag, false);
+                    visionPortal.close();
                     telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;

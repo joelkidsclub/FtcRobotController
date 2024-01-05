@@ -129,7 +129,7 @@ public class CS13353TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        upspeed = 0.7;
+        upspeed = 0.8;
 
         /** VERY IMPORTANT INFORMATION!!!!!
          * GAMEPAD1 CONTROLS AT THE MOMENT:
@@ -154,10 +154,10 @@ public class CS13353TeleOp extends LinearOpMode {
                 turnspeed = 0.25;
             } else if (gamepad1.right_bumper) {
                 speed = 1;
-                turnspeed = 0.5;
+                turnspeed = 0.6;
             } else {
-                speed = 0.5;
-                turnspeed = 0.5;
+                speed = 0.6;
+                turnspeed = 0.6;
             }
 
             if (gamepad1.circle){

@@ -297,6 +297,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP8);
                     }
+                    sleep(30000);
                     break;
                 // Position 2
                 case STATE_LEFT_POS2_STEP1:
@@ -369,6 +370,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP8);
                     }
+                    sleep(30000);
                     break;
                 // Position 3
                 case STATE_LEFT_POS3_STEP1:
@@ -377,8 +379,6 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS3_STEP2;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_INITIAL_3);
-                        dropPurple(1.5);
-                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS3_STEP2:
@@ -388,12 +388,15 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
                     }
+                    dropPurple(1.5);
+                    purpleToInitial(1);
                     break;
                 case STATE_LEFT_POS3_STEP3:
                     telemetry.addData("currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP3);
                     }
                     break;
                 case STATE_LEFT_POS3_STEP4:
@@ -440,6 +443,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS3_STEP8);
                     }
+                    sleep(30000);
                     break;
                 // Position 4
                 case STATE_LEFT_POS4_STEP1:
@@ -468,7 +472,6 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                     }
                     break;
                 case STATE_POS_REALIGN:
-                    if (!drive.isBusy()) {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
                         currentState = State.STATE_PARK;
                         //visionPortal.setProcessorEnabled(tfod, false);
@@ -476,14 +479,13 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                         visionPortal.setProcessorEnabled(tfod, false);
                         visionPortal.setProcessorEnabled(aprilTag, false);
                         visionPortal.close();
-                        telemetry.update();
-                        detectAprilTag();
-                        telemetryAprilTag();
+                        //telemetry.update();
+                        //detectAprilTag();
+                        //telemetryAprilTag();
                         //currentState = State.STATE_PARK;
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
-                    }
-                    done = true;
+                    //done = true;
                     sleep (30000);
                     break;
                 case STATE_PARK:
@@ -491,24 +493,19 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                     visionPortal.setProcessorEnabled(tfod, false);
                     visionPortal.setProcessorEnabled(aprilTag, false);
                     visionPortal.close();
-
-                    if (!drive.isBusy()) {
                         telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                         currentState = State.IDLE;
                         telemetry.addData("STEP 99: STATE_PARK", "...");
                         telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
                         telemetry.update();
-                    }
                     break;
 
                 case IDLE:
                     step = 100;
                     //Do Nothing
-                    if (!drive.isBusy()) {
                         done = true;
                         telemetry.addData("STEP 100: STATE_IDLE. Version =>", ver);
                         telemetry.update();
-                    }
                     break;
             } //End switch
 
@@ -649,6 +646,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
         traj_INITIAL_1 = drive.trajectoryBuilder(new Pose2d(0,0,0))
                 .lineToLinearHeading(new Pose2d(-30.5,-25, Math.toRadians(-90)))
                 .build();
+
         traj_STATE_LEFT_POS1_STEP1 = drive.trajectoryBuilder(traj_INITIAL_1.end())
                 .back(2.5)
                 .build();
@@ -668,11 +666,11 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
         traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-32,87, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-32,86.5, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP6.end())
-                .strafeRight(21)
+                .strafeRight(20)
                 .build();
 
         traj_STATE_LEFT_POS1_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP7.end())
@@ -685,7 +683,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-40.5,-14, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-39.5,-15, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP2.end())
@@ -698,33 +696,39 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-27.5,86.5, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-24.5,87.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
-                .strafeRight(25)
+                .strafeRight(24)
                 .build();
         traj_STATE_LEFT_POS2_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP7.end())
                 .back(12)
                 .build();
 // Position 3
         traj_INITIAL_3 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-32,2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-30,-20, Math.toRadians(-90)))
+                .build();
+                //.lineToLinearHeading(new Pose2d(-32,2, Math.toRadians(-90)))
+                //.build();
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
+                .lineToLinearHeading(new Pose2d(-30.25,0, Math.toRadians(-90)))
                 .build();
 
-        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
+        traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
                 .lineToLinearHeading(new Pose2d(-50.5,-10, Math.toRadians(-90)))
                 .build();
 
-        traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
+        traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())
                 //.back(96)
                 .lineToLinearHeading(new Pose2d(-50.5,79, Math.toRadians(-90)))
                 .build();
+
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-22,86.5, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-19.5,86.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP6.end())
-                .strafeRight(30)
+                .strafeRight(29)
                 .build();
         traj_STATE_LEFT_POS3_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP7.end())
                 .back(12)

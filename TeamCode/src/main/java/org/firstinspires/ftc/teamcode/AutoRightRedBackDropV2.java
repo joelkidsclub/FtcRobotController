@@ -645,7 +645,6 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .forward(14)
                 .build();
 
-
         traj_STATE_LEFT_POS1_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP4.end())
                 .strafeRight(22)
                 .build();

@@ -638,7 +638,6 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .forward(10)
                 .build();
 
-
         traj_STATE_LEFT_POS1_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP4.end())
                 .strafeLeft(33)
                 .build();
@@ -658,7 +657,6 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3.end())
                 .forward(16)
                 .build();
-
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
                 .strafeLeft(41)

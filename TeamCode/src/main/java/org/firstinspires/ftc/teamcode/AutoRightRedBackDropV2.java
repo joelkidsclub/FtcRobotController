@@ -449,13 +449,18 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
                         currentState = State.STATE_PARK;
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
+                        //visionPortal.setProcessorEnabled(tfod, false);
+                        //visionPortal.setProcessorEnabled(aprilTag, true);
                         visionPortal.setProcessorEnabled(tfod, false);
-                        visionPortal.setProcessorEnabled(aprilTag, true);
+                        visionPortal.setProcessorEnabled(aprilTag, false);
+                        visionPortal.close();
                         //telemetry.update();
                         //detectAprilTag();
                         //telemetryAprilTag();
                         telemetry.update();
                     }
+                    done = true;
+                    sleep(30000);
                     break;
                 case STATE_PARK:
                     step = 99;

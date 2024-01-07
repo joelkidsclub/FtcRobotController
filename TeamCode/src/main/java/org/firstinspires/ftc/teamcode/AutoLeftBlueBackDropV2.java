@@ -243,7 +243,6 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                         //drive.followTrajectory(traj_STATE_LEFT_POS1_STEP1);
                     }
                     break;
-
                 case STATE_LEFT_POS1_STEP2:
                     if (!drive.isBusy()) {
                         telemetry.addData("currentState => ", currentState);
@@ -291,8 +290,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
                     }
                     break;
-// Position middle
-                case STATE_LEFT_POS2_STEP1:
+                case STATE_LEFT_POS2_STEP1: // Position middle
                     if (!drive.isBusy()) {
                         telemetry.addData("currentState => ", currentState);
                         currentState = State.STATE_LEFT_POS2_STEP2;
@@ -351,8 +349,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
                     }
                     break;
-//Position right
-                case STATE_LEFT_POS3_STEP1:
+                case STATE_LEFT_POS3_STEP1: //Position right
                     if (!drive.isBusy()) {
                         telemetry.addData("currentState => ", currentState);
                         currentState = State.STATE_LEFT_POS3_STEP2;
@@ -447,25 +444,27 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
                         currentState = State.STATE_PARK;
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
+//                        visionPortal.setProcessorEnabled(tfod, false);
+//                        visionPortal.setProcessorEnabled(aprilTag, true);
                         visionPortal.setProcessorEnabled(tfod, false);
-                        visionPortal.setProcessorEnabled(aprilTag, true);
+                        visionPortal.setProcessorEnabled(aprilTag, false);
+                        visionPortal.close();
+
                         //telemetry.update();
                         //detectAprilTag();
                         //telemetryAprilTag();
                         telemetry.update();
                     }
+                    sleep(30000);
+                    done = true;
                     break;
                 case STATE_PARK:
                     step = 99;
-                    visionPortal.setProcessorEnabled(tfod, false);
-                    visionPortal.setProcessorEnabled(aprilTag, false);
-                    visionPortal.close();
                     telemetry.addData("STEP 99: STATE_PARK: currentState => ", currentState);
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
                         telemetry.addData("STEP 99: STATE_PARK", "...");
                         telemetry.addData("STEP 99: STATE_PARK: nextState => ", currentState);
-                        runArm(upSpeed, 10, 30);
                         telemetry.log();
                         telemetry.update();
                     }
@@ -670,7 +669,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_INITIAL_3 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-32,-36.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-34,-36.5, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_INITIAL_3.end())
@@ -680,7 +679,6 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())
                 .forward(16)
                 .build();
-
 
         traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP4.end())
                 .strafeLeft(28)

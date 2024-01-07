@@ -476,20 +476,23 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                     break;
                 case STATE_POS_REALIGN:
                     if (!drive.isBusy()) {
-                        telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
-
-                        visionPortal.setProcessorEnabled(tfod, false);
-                        visionPortal.setProcessorEnabled(aprilTag, true);
-                        telemetry.update();
-                        detectAprilTag();
-                        telemetryAprilTag();
-
                         currentState = State.STATE_PARK;
+                        telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
+                        //visionPortal.setProcessorEnabled(tfod, false);
+                        //visionPortal.setProcessorEnabled(aprilTag, true);
+                        visionPortal.setProcessorEnabled(tfod, false);
+                        visionPortal.setProcessorEnabled(aprilTag, false);
+                        visionPortal.close();
+                        //telemetry.update();
+                        //detectAprilTag();
+                        //telemetryAprilTag();
+
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
+                    done = true;
+                    sleep(30000);
                     break;
-
                 case STATE_PARK:
                     step = 99;
                     visionPortal.setProcessorEnabled(tfod, false);

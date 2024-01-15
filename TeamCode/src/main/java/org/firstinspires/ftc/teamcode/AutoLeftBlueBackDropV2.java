@@ -34,7 +34,7 @@ import java.util.logging.SimpleFormatter;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AutoLeftBlueBackDropV2", group = "drive")
+@Autonomous(name="BlueBackDrop", group = "drive")
 //@Disabled
 public class AutoLeftBlueBackDropV2 extends LinearOpMode {
     /*
@@ -223,7 +223,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
-                        visionPortal.setProcessorEnabled(tfod, true);
+                        visionPortal.setProcessorEnabled(tfod, false);//true to false
                         visionPortal.setProcessorEnabled(aprilTag, false);
 
                         //drive.followTrajectoryAsync(traj_Drive_To_Low_Junction);
@@ -651,7 +651,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP3 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-41,-15, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-41,-14, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3.end())
@@ -671,7 +671,7 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .lineToLinearHeading(new Pose2d(-31,0.5, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-31,-4, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())

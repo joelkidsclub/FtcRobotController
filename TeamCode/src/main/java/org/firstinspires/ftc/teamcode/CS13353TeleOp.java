@@ -129,7 +129,7 @@ public class CS13353TeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        upspeed = 0.8;
+        upspeed = 1.0;
 
         /** VERY IMPORTANT INFORMATION!!!!!
          * GAMEPAD1 CONTROLS AT THE MOMENT:
@@ -192,7 +192,6 @@ public class CS13353TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.dpad_right) {
-
                 linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }

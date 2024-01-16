@@ -520,11 +520,15 @@ public class AutoLeftBlueBackDropV2 extends LinearOpMode {
     }
 
     public void purpleToInitial(double tTimeSec){
+        pixelDropper.setPosition(0);
+        /*
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time purple to initial=>", String.format("%4.1f ", stateTime.time()));
             pixelDropper.setPosition(0);
         }
+
+         */
     }
 
     public void openGateServo(double tTimeSec){

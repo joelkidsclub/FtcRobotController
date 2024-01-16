@@ -71,6 +71,7 @@ public class CS13353TeleOp extends LinearOpMode {
     private double upspeed;
 
     private CRServo pixelMover;
+    private CRServo pixelMover2;
     private DcMotor LinearActuator;
 
 
@@ -91,6 +92,7 @@ public class CS13353TeleOp extends LinearOpMode {
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         intake = hardwareMap.get(DcMotor.class, "INTAKE");
         pixelMover = hardwareMap.get(CRServo.class, "boxmover");
+        pixelMover2 = hardwareMap.get(CRServo.class, "boxmover2");
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         gate = hardwareMap.get(Servo.class, "gate");
         droneServo = hardwareMap.get(Servo.class, "drone");
@@ -115,6 +117,7 @@ public class CS13353TeleOp extends LinearOpMode {
         linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
         pixelMover.setDirection(DcMotorSimple.Direction.FORWARD);
+        pixelMover2.setDirection(DcMotorSimple.Direction.REVERSE);
         LinearActuator.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
@@ -178,17 +181,22 @@ public class CS13353TeleOp extends LinearOpMode {
 
             if(gamepad2.left_bumper){
                 pixelMover.setPower(1);
-            } else if (gamepad2.right_bumper) {
+                pixelMover2.setPower(1);
+            }
+
+            if (gamepad2.right_bumper) {
                 pixelMover.setPower(-1);
+                pixelMover2.setPower(-1);
             }
 
+            //Open
             if(gamepad2.circle) {
-                gate.setPosition(0.135);
-
+                gate.setPosition(0);//.135
             }
 
+            //Close
             if(gamepad2.square) {
-                gate.setPosition(0.73);
+                gate.setPosition(0.28);//.73
             }
 
             if(gamepad2.dpad_right) {

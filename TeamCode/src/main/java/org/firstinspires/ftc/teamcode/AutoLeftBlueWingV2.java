@@ -257,6 +257,10 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP4);
                     }
+                    stateTime.reset();
+                    while (stateTime.time() < 8 && opModeIsActive())  {
+                        telemetry.addData("Waiting for alliance to complete their path...", String.format("%4.1f ", stateTime.time()));
+                    }
                     break;
                 case STATE_LEFT_POS1_STEP4:
                     telemetry.addData("currentState => ", currentState);
@@ -332,6 +336,10 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP4);
                     }
+                    stateTime.reset();
+                    while (stateTime.time() < 8 && opModeIsActive())  {
+                        telemetry.addData("Waiting for alliance to complete their path...", String.format("%4.1f ", stateTime.time()));
+                    }
                     break;
                 case STATE_LEFT_POS2_STEP4:
                     telemetry.addData("currentState => ", currentState);
@@ -396,6 +404,10 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS3_STEP3;//STATE_LEFT_POS1_STEP3;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
+                    }
+                    stateTime.reset();
+                    while (stateTime.time() < 8 && opModeIsActive())  {
+                        telemetry.addData("Waiting for alliance to complete their path...", String.format("%4.1f ", stateTime.time()));
                     }
                     break;
                 case STATE_LEFT_POS3_STEP3:
@@ -539,11 +551,14 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
     }
 
     public void purpleToInitial(double tTimeSec){
+        pixelDropper.setPosition(0);
+        /*
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time purple to initial=>", String.format("%4.1f ", stateTime.time()));
-            pixelDropper.setPosition(0);
+          pixelDropper.setPosition(0);
         }
+         */
     }
 
     public void dropPixel() {

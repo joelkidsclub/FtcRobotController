@@ -94,6 +94,7 @@ public class CS13353TeleOp extends LinearOpMode {
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         gate = hardwareMap.get(Servo.class, "gate");
         droneServo = hardwareMap.get(Servo.class, "drone");
+        purpleServo = hardwareMap.get(Servo.class, "pixeldrop");
 
 
         // ########################################################################################
@@ -201,6 +202,9 @@ public class CS13353TeleOp extends LinearOpMode {
                 droneServo.setPosition(0.55);
             }
 
+            if(gamepad2.t) {
+                droneServo.setPosition(0.55);
+            }
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.

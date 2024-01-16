@@ -60,15 +60,6 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
     private double turnspeed = 1;
 
 
-    private DcMotor linearSlideLeft = null;
-
-    private DcMotor linearSlideRight = null;
-
-    private DcMotor intake = null;
-
-    private double upspeed;
-
-    private Servo pixelMover;
 
 
     @Override
@@ -81,15 +72,7 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "BLD");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "FRD");
         rightBackDrive = hardwareMap.get(DcMotor.class, "BRD");
-//        distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
-//        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
-//        colorSensor = hardwareMap.get(ColorSensor.class, "color");
-        linearSlideLeft = hardwareMap.get(DcMotor.class, "LLS");
-        linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
-        intake = hardwareMap.get(DcMotor.class, "INTAKE");
-        pixelMover = hardwareMap.get(Servo.class,"boxmover");
-        //droneServo = hardwareMap.get(CRServo.class,"droneLauncher");
-        double currentPosition = pixelMover.getPosition();
+
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -105,22 +88,15 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
-        linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        pixelMover.setDirection(Servo.Direction.REVERSE);
+
 
 
 
         // Wait for the game to start (driver presses PLAY)
+        waitForStart();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        pixelMover.setPosition(0.09);
-        waitForStart();
-        runtime.reset();
-
-        upspeed = 0.4;
 
 
         // run until the end of the match (driver presses STOP)
@@ -137,33 +113,7 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
                 turnspeed = 0.5;
             }
 
-            double LinearSlideMovement = gamepad2.left_stick_y * -upspeed;
-            linearSlideLeft.setPower(LinearSlideMovement);
-            linearSlideRight.setPower(LinearSlideMovement);
 
-            telemetry.addData("LinearSlideMovementValue", LinearSlideMovement);
-            telemetry.update();
-
-            if (gamepad2.dpad_down){
-                intake.setPower(0.85);
-            }else if (gamepad2.dpad_up){
-                intake.setPower(-0.85);
-            } else {
-                intake.setPower(0);
-            }
-
-            if (gamepad2.triangle){
-                pixelMover.setPosition(.90);
-                telemetry.addData("Triangle is pressed", "Position " + pixelMover.getPosition());
-            }
-            if (gamepad2.square){
-                pixelMover.setPosition(0.09);
-                telemetry.addData("Square is pressed", "Position " + pixelMover.getPosition());
-            }
-            if (gamepad2.circle){
-                pixelMover.setPosition(.55);
-                telemetry.addData("Triangle is pressed", "Position " + pixelMover.getPosition());
-            }
 
 
 
@@ -220,7 +170,7 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Position", "Position " + pixelMover.getPosition());
+
 
 //            DistanceSensor();
 //            ColorSensor();

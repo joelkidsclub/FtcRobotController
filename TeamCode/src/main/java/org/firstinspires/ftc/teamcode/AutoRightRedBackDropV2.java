@@ -34,7 +34,7 @@ import java.util.logging.SimpleFormatter;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="AutoRightRedBackDropV2", group = "drive")
+@Autonomous(name="RedBackDrop", group = "drive")
 //@Disabled
 public class AutoRightRedBackDropV2 extends LinearOpMode {
     /*
@@ -223,7 +223,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         else
                             currentState = State.STATE_LEFT_POS2_STEP1;
 
-                        visionPortal.setProcessorEnabled(tfod, true);
+                        visionPortal.setProcessorEnabled(tfod, false);//true to false
                         visionPortal.setProcessorEnabled(aprilTag, false);
 
                         //drive.followTrajectoryAsync(traj_Drive_To_Low_Junction);
@@ -508,7 +508,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
     public void dropYellowPixel() {
         if (!pixelDropped) {
             movePixelBoxToDrop(1.75);
-            openGateServo(2.5);
+            openGateServo(3);
             movePixelBoxToIntake(1.5);
             pixelDropped = true;
 
@@ -524,11 +524,15 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
     }
 
     public void purpleToInitial(double tTimeSec){
+        pixelDropper.setPosition(0);
+        /*
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time purple to initial=>", String.format("%4.1f ", stateTime.time()));
             pixelDropper.setPosition(0);
         }
+
+         */
     }
 
     public void closeGate() {
@@ -653,7 +657,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP3 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-35,16, Math.toRadians(89)))
+                .lineToLinearHeading(new Pose2d(-35,17, Math.toRadians(89)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3.end())

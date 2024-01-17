@@ -201,7 +201,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         if (isStopRequested()) return;
 
         boolean done = false;
-        pixelDropper.setPosition(0);
+        pixelDropper.setPosition(0.05);
 
         while (!isStopRequested() && opModeIsActive() && !done) {
             telemetry.addData("Current state 1=> ", currentState);
@@ -546,7 +546,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time drop purple=>", String.format("%4.1f ", stateTime.time()));
-            pixelDropper.setPosition(45);
+            pixelDropper.setPosition(.4);
         }
     }
 

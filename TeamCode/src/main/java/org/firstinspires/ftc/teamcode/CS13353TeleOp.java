@@ -68,6 +68,8 @@ public class CS13353TeleOp extends LinearOpMode {
     private DcMotor intake = null;
     private Servo gate;
 
+    private Servo pixelServo;
+
     private double upspeed;
 
     private CRServo pixelMover;
@@ -96,7 +98,7 @@ public class CS13353TeleOp extends LinearOpMode {
         LinearActuator = hardwareMap.get(DcMotor.class, "LA");
         gate = hardwareMap.get(Servo.class, "gate");
         droneServo = hardwareMap.get(Servo.class, "drone");
-        purpleServo = hardwareMap.get(Servo.class, "pixeldrop");
+        pixelServo = hardwareMap.get(Servo.class, "pixeldrop");
 
 
         // ########################################################################################
@@ -209,9 +211,18 @@ public class CS13353TeleOp extends LinearOpMode {
                 droneServo.setPosition(0.55);
             }
 
-            if(gamepad2.t) {
-                droneServo.setPosition(0.55);
+            if(gamepad2.dpad_down) {
+                pixelServo.setPosition(0.85);
             }
+
+            if(gamepad2.dpad_up) {
+                pixelServo.setPosition(.4);
+            }
+
+            if(gamepad2.dpad_left) {
+                pixelServo.setPosition(.99);
+            }
+
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -259,6 +270,7 @@ public class CS13353TeleOp extends LinearOpMode {
             telemetry.addData("Right slide =>", linearSlideRight.getCurrentPosition());
             telemetry.addData("PixelMover power =>", pixelMover.getPower());
             telemetry.addData("Gate position =>", gate.getPosition());
+            telemetry.addData("dropper position =>", pixelServo.getPosition());
             //pixelMover.setPower(-1);
             //gate.setPosition(1);
             //telemetry.addData("PixelMover power =>", pixelMover.getPower());

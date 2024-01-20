@@ -562,8 +562,8 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
     public void dropPixel() {
         if (!pixelDropped) {
-            movePixelBoxToDrop(2);
-            openGateServo(2.75);
+            movePixelBoxToDrop(2.75);
+            openGateServo(2.5);
             movePixelBoxToIntake(1.5);
             //openGateServo(1);
             pixelDropped = true;
@@ -674,7 +674,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS1_STEP1 = drive.trajectoryBuilder(traj_INITIAL_1.end())
-                .back(4.5)
+                .back(4)
                 .build();
 
         traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
@@ -692,7 +692,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
         traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-32,86.25, Math.toRadians(-89)))
+                .lineToLinearHeading(new Pose2d(-30.5,85.5, Math.toRadians(-89)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP6.end())
@@ -700,7 +700,7 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS1_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP7.end())
-                .back(12)
+                .back(6)
                 .build();
 
 // Position 2
@@ -722,13 +722,13 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-24.5,87.5, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-24.5,84.5, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
                 .strafeRight(24)
                 .build();
         traj_STATE_LEFT_POS2_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP7.end())
-                .back(12)
+                .back(6)
                 .build();
 // Position 3
         traj_INITIAL_3 = drive.trajectoryBuilder(new Pose2d(0,0,0))
@@ -737,11 +737,11 @@ public class AutoRightRedWingV2 extends LinearOpMode {
                 //.lineToLinearHeading(new Pose2d(-32,2, Math.toRadians(-90)))
                 //.build();
         traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .lineToLinearHeading(new Pose2d(-30.25,0, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-30.25,1, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())
-                .lineToLinearHeading(new Pose2d(-50.5,-10, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-50.5,-8, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())
@@ -751,13 +751,13 @@ public class AutoRightRedWingV2 extends LinearOpMode {
 
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-19,86.75, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-18.5,84.2, Math.toRadians(-90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP6.end())
                 .strafeRight(29)
                 .build();
         traj_STATE_LEFT_POS3_STEP8 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP7.end())
-                .back(12)
+                .back(6)
                 .build();
 
         while(!isStarted() && !isStopRequested()){

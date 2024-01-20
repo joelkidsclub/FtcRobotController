@@ -95,8 +95,8 @@ public class DriveConstants {
     //Max Velocity: 52.67646202709491
     //90% is 47.4088158244
     //Voltage Compensated kF: 13.50290526770119 //11.721254006410254
-    public static double MAX_VEL = 47.4088158244;//52.48180821614297
-    public static double MAX_ACCEL = 47.4088158244;//52.48180821614297
+    public static double MAX_VEL = 60;//55;//47.4088158244;//52.48180821614297
+    public static double MAX_ACCEL = 60;//55;//47.4088158244;//52.48180821614297
     public static double MAX_ANG_VEL = Math.toRadians(187.068624243748726);//(January)//Math.toRadians(184.02607784577722);
     public static double MAX_ANG_ACCEL =Math.toRadians(187.068624243748726);//(January) //Math.toRadians(184.02607784577722);
 

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 
 @Config
-@Autonomous(name="ArihantTestAprilTags", group = "drive")
+@Autonomous(name="XArihantTestAprilTags", group = "drive")
 //@Disabled
 public class ArihantTestAprilTags extends LinearOpMode {
 

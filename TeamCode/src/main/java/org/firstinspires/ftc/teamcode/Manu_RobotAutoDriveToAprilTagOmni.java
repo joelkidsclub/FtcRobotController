@@ -81,7 +81,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Autonomous(name="ManuOmniDriveToAprilTag", group = "xConcept")
-//@Disabled
+@Disabled
 public class Manu_RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

@@ -133,7 +133,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
     Trajectory traj_STATE_LEFT_POS2_STEP6;
     Trajectory traj_STATE_LEFT_POS3_STEP1;
     Trajectory traj_STATE_LEFT_POS3_STEP1b;
-
+    Trajectory traj_STATE_LEFT_POS3_STEP2;
     Trajectory traj_STATE_LEFT_POS3_STEP3;
     Trajectory traj_STATE_LEFT_POS3_STEP4;
     Trajectory traj_STATE_LEFT_POS3_STEP5;
@@ -153,7 +153,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
         linearSlideLeft  = hardwareMap.get(DcMotor .class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         gate = hardwareMap.get(Servo.class, "gate");
-        distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
+        //distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         boolean armUp = false;
@@ -192,14 +192,16 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
         telemetry.addData("Desired tag =>", elementPos);
         telemetry.update();
 
-        runArm(upSpeed, 138, 136);
+        //runArm(upSpeed, 138, 136);
+
+        runArm(upSpeed, 238, 236);
 
         linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if (isStopRequested()) return;
         boolean done = false;
-        pixelDropper.setPosition(0);
+        pixelDropper.setPosition(0.85);
 
         currentState = State.STATE_INITIAL;
 
@@ -262,7 +264,9 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("currentState => ", currentState);
                         currentState = State.STATE_LEFT_POS1_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        //drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP3);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                         }
@@ -324,7 +328,9 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("currentState => ", currentState);
                         currentState = State.STATE_LEFT_POS2_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        //drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP3);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                     }
@@ -383,7 +389,9 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                         telemetry.addData("currentState => ", currentState);
                         currentState = State.STATE_LEFT_POS3_STEP4;
                         telemetry.addData("nextState => ", currentState);
+                        //drive.followTrajectory(traj_STATE_LEFT_POS3_STEP2);
                         drive.followTrajectory(traj_STATE_LEFT_POS3_STEP3);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                     }
@@ -507,9 +515,9 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
 
     public void dropYellowPixel() {
         if (!pixelDropped) {
-            movePixelBoxToDrop(1.75);
-            openGateServo(3);
-            movePixelBoxToIntake(1.5);
+            movePixelBoxToDrop(2.5);
+            openGateServo(2.5);
+            movePixelBoxToIntake(1);
             pixelDropped = true;
 
         }
@@ -519,12 +527,12 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time drop purple=>", String.format("%4.1f ", stateTime.time()));
-            pixelDropper.setPosition(45);
+            pixelDropper.setPosition(0.4);
         }
     }
 
     public void purpleToInitial(double tTimeSec){
-        pixelDropper.setPosition(0);
+        pixelDropper.setPosition(0.85);
         /*
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
@@ -634,11 +642,15 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_INITIAL_1 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-33.5,38, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-33.5,37.5, Math.toRadians(-90)))
                 .build();
-
+/*
+        traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_INITIAL_1.end())
+                .lineToLinearHeading(new Pose2d(-15,10, Math.toRadians(90)))
+                .build();
+*/
         traj_STATE_LEFT_POS1_STEP3 = drive.trajectoryBuilder(traj_INITIAL_1.end())
-                .lineToLinearHeading(new Pose2d(-27,-1.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-27,-2, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP3.end())
@@ -653,11 +665,15 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_INITIAL_2 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-28.5,37.4, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-28.5,37.6, Math.toRadians(-90)))
                 .build();
-
+/*
+        traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_INITIAL_2.end())
+                .lineToLinearHeading(new Pose2d(-15,10, Math.toRadians(90)))
+                .build();
+*/
         traj_STATE_LEFT_POS2_STEP3 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-35,17, Math.toRadians(89)))
+                .lineToLinearHeading(new Pose2d(-36.5,15.5, Math.toRadians(89)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP3.end())
@@ -665,7 +681,7 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP4.end())
-                .strafeRight(30)
+                 .strafeRight(30)
                 .build();
 
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
@@ -676,8 +692,14 @@ public class AutoRightRedBackDropV2 extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-24,37.75, Math.toRadians(-90)))
                 .build();
 
+        /*
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
+                .lineToLinearHeading(new Pose2d(-15,10, Math.toRadians(90)))
+                .build();
+        */
+
         traj_STATE_LEFT_POS3_STEP3 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .lineToLinearHeading(new Pose2d(-27,19, Math.toRadians(89)))
+                .lineToLinearHeading(new Pose2d(-27,21, Math.toRadians(89)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP3.end())

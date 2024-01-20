@@ -76,6 +76,8 @@ public class CS13353TeleOp extends LinearOpMode {
     private CRServo pixelMover2;
     private DcMotor LinearActuator;
 
+    static final int targetLeft = -1334;
+    static final int targetRight = -1337;
 
     @Override
     public void runOpMode() {
@@ -134,8 +136,8 @@ public class CS13353TeleOp extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
         upspeed = 1.0;
+        droneServo.setPosition(0.0);
 
         /** VERY IMPORTANT INFORMATION!!!!!
          * GAMEPAD1 CONTROLS AT THE MOMENT:
@@ -150,7 +152,6 @@ public class CS13353TeleOp extends LinearOpMode {
          * Dpad Left & Right - Linear Actuator(Will be changed to have failsafe included)
          * Square and Circle - Pixel Box Mover GATE Controls for open and close
          **/
-
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -181,7 +182,6 @@ public class CS13353TeleOp extends LinearOpMode {
             double intakeMovement = gamepad2.right_stick_y;
             intake.setPower(-1 * intakeMovement);
 
-
             if(gamepad2.left_bumper){
                 pixelMover.setPower(1);
                 pixelMover2.setPower(1);
@@ -208,19 +208,19 @@ public class CS13353TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.triangle) {
-                droneServo.setPosition(0.55);
+                droneServo.setPosition(0.12);
             }
-
-            if(gamepad2.dpad_down) {
-                pixelServo.setPosition(0.85);
-            }
-
-            if(gamepad2.dpad_up) {
-                pixelServo.setPosition(.4);
-            }
-
+/*
             if(gamepad2.dpad_left) {
-                pixelServo.setPosition(.99);
+              runArm(upspeed, targetLeft, targetRight);
+            }
+*/
+            if (gamepad1.dpad_up) {
+                droneServo.setPosition(0.0);
+            }
+
+            if (gamepad1.dpad_down) {
+                droneServo.setPosition(0.12);
             }
 
             double max;
@@ -266,8 +266,8 @@ public class CS13353TeleOp extends LinearOpMode {
 //           ColorSensor();
 
             telemetry.addData("LinearSlideMovementValue =>", LinearSlideMovement);
-            telemetry.addData("Left slide =>", linearSlideLeft.getCurrentPosition());
-            telemetry.addData("Right slide =>", linearSlideRight.getCurrentPosition());
+            telemetry.addData("Left slide =>", linearSlideLeft.getCurrentPosition());//-1334
+            telemetry.addData("Right slide =>", linearSlideRight.getCurrentPosition());//-1337
             telemetry.addData("PixelMover power =>", pixelMover.getPower());
             telemetry.addData("Gate position =>", gate.getPosition());
             telemetry.addData("dropper position =>", pixelServo.getPosition());
@@ -282,6 +282,56 @@ public class CS13353TeleOp extends LinearOpMode {
         }
     }
 
+    public void runArm(double speed, int leftTicks, int rightTicks){
+        linearSlideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        linearSlideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        linearSlideLeft.setDirection(DcMotor.Direction.REVERSE);
+        linearSlideRight.setDirection(DcMotor.Direction.FORWARD);
+
+        linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+            linearSlideLeft.setTargetPosition(leftTicks);
+            linearSlideRight.setTargetPosition(rightTicks);
+
+            // Turn On RUN_TO_POSITION
+            linearSlideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            linearSlideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            linearSlideLeft.setPower(speed);
+            linearSlideRight.setPower(speed);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() && (linearSlideLeft.isBusy() && linearSlideRight.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  " %7d :%7d", targetLeft,  targetRight);
+                telemetry.addData("Currently at",  " at %7d :%7d",
+                        linearSlideLeft.getCurrentPosition(), linearSlideRight.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            linearSlideLeft.setPower(0);
+            linearSlideRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            linearSlideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(250);   // optional pause after each move.
+        }
+    }
 
 /*
     public double DistanceSensor() {
@@ -346,5 +396,6 @@ public class CS13353TeleOp extends LinearOpMode {
 
 
  */
+
 }
 

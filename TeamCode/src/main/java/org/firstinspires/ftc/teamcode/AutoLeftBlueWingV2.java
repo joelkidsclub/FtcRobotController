@@ -161,7 +161,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         linearSlideLeft  = hardwareMap.get(DcMotor .class, "LLS");
         linearSlideRight = hardwareMap.get(DcMotor.class, "RLS");
         gate = hardwareMap.get(Servo.class, "gate");
-        distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
+        //distanceSensor = hardwareMap.get(DistanceSensor .class, "dist");
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
 
@@ -192,7 +192,10 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         telemetry.addData("Desired tag =>", elementPos);
         telemetry.update();
 
-        runArm(upSpeed, 138, 136);
+        //runArm(upSpeed, 138, 136);
+
+        runArm(upSpeed, 238, 236);
+
         linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -201,7 +204,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         if (isStopRequested()) return;
 
         boolean done = false;
-        pixelDropper.setPosition(0.05);
+        pixelDropper.setPosition(0.85);
 
         while (!isStopRequested() && opModeIsActive() && !done) {
             telemetry.addData("Current state 1=> ", currentState);
@@ -246,6 +249,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS1_STEP3;//STATE_LEFT_POS1_STEP3;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                     }
@@ -274,9 +278,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP6;
                         telemetry.addData("nextState => ", currentState);
-
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP5);
-
                     }
                     break;
                 case STATE_LEFT_POS1_STEP6:
@@ -325,6 +327,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS2_STEP3;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                     }
@@ -394,6 +397,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS3_STEP2;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_INITIAL_3);
+                        sleep(1000);
                         dropPurple(1.5);
                         purpleToInitial(1);
                     }
@@ -542,7 +546,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
 
     } //End runopmode
 
-    public void dropPurple(double tTimeSec){
+    public void dropPurpleOld(double tTimeSec){
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
             telemetry.addData("Time drop purple=>", String.format("%4.1f ", stateTime.time()));
@@ -550,8 +554,16 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
         }
     }
 
+    public void dropPurple(double tTimeSec){
+        stateTime.reset();
+        while (stateTime.time() < tTimeSec && opModeIsActive()) {
+            telemetry.addData("Time drop purple=>", String.format("%4.1f ", stateTime.time()));
+            pixelDropper.setPosition(0.4);
+        }
+    }
+
     public void purpleToInitial(double tTimeSec){
-        pixelDropper.setPosition(0);
+        pixelDropper.setPosition(0.85);//0 original
         /*
         stateTime.reset();
         while (stateTime.time() < tTimeSec && opModeIsActive()) {
@@ -563,7 +575,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
 
     public void dropPixel() {
         if (!pixelDropped) {
-            movePixelBoxToDrop(1.75);
+            movePixelBoxToDrop(2);
             openGateServo(3);
             movePixelBoxToIntake(1.5);
             pixelDropped = true;

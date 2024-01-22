@@ -670,15 +670,15 @@ public class AutoRightRedWingV2 extends LinearOpMode {
         long timeOut = (long) 0.1;
 
         traj_INITIAL_1 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-30.5,-25, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-30.5,-24, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP1 = drive.trajectoryBuilder(traj_INITIAL_1.end())
-                .back(4)
+                .back(3)
                 .build();
 
         traj_STATE_LEFT_POS1_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP1.end())
-                .lineToLinearHeading(new Pose2d(-50.5,-25, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-50.5,-21, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP2.end())

@@ -293,7 +293,9 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                             armUp = true;
                         }
                         dropPixel();
+                        sleep(30000);
                     }
+
                     break;
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
@@ -371,6 +373,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                             armUp = true;
                         }
                         dropPixel();
+                        sleep(30000);
                     }
                     break;
                 case STATE_LEFT_POS2_STEP7:
@@ -448,6 +451,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                             armUp = true;
                         }
                         dropPixel();
+                        sleep(30000);
                     }
                     break;
                 case STATE_LEFT_POS3_STEP7:
@@ -713,7 +717,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
 
 // Position 2
         traj_INITIAL_2 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-25,20, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(-25.5,20, Math.toRadians(0)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_INITIAL_2.end())
@@ -730,7 +734,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-26.25,-82.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-26.25,-83.5, Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
                 .strafeLeft(25)
@@ -744,7 +748,7 @@ public class AutoLeftBlueWingV2 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .lineToLinearHeading(new Pose2d(-50.5,24, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-50.5,23, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS3_STEP5 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP2.end())

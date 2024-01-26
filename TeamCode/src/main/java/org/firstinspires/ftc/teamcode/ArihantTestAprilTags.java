@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 
 @Config
-@Autonomous(name="XArihantTestAprilTags", group = "drive")
+@Autonomous(name="ArihantTestAprilTags", group = "drive")
 //@Disabled
 public class ArihantTestAprilTags extends LinearOpMode {
 
@@ -59,8 +59,9 @@ public class ArihantTestAprilTags extends LinearOpMode {
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
     SampleMecanumDrive drive;
+    SampleMecanumDrive drive2;
 
-
+    public static Pose2d currentPose = new Pose2d();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -84,19 +85,22 @@ public class ArihantTestAprilTags extends LinearOpMode {
         waitForStart();
 
         drive = new SampleMecanumDrive(hardwareMap);
+        drive2 = new SampleMecanumDrive(hardwareMap);
         logger.info("13353 Test Log *************");
         drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(0)));
-
+        drive2.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(0)));
 
         Trajectory traj1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .forward(10)
+                .strafeLeft(5)
                 .build();
         //april tag code happens between these two trajectories
         //roadrunner code with new positioning
 
-        Trajectory traj2 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .lineTo(new Vector2d(0, -10))
-                                .build();
+
+        Trajectory traj2 = drive2.trajectoryBuilder(drive2.getPoseEstimate())
+                //.lineTo(new Vector2d(0, -10))
+                .strafeRight(5)
+                .build();
 
         waitForStart();
 
@@ -122,8 +126,7 @@ public class ArihantTestAprilTags extends LinearOpMode {
         drive.update();
 
         //resume roadrunner code
-
-        //drive.followTrajectory(traj2);
+        drive2.followTrajectory(traj2);
 
         while (!isStopRequested() && opModeIsActive());
 
@@ -226,6 +229,7 @@ public class ArihantTestAprilTags extends LinearOpMode {
         double rightBackPower    =  x -y +yaw;
 
 
+        telemetry.addLine(String.format("MoveRobot Drive =>%6.0f Strafe=>%6.0f Turn=> %6.0f => ", x, y, yaw));
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));

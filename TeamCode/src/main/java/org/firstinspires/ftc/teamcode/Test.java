@@ -29,11 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -87,13 +87,12 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-//@TeleOp(name="Auto Omni Drive To AprilTag", group = "Concept")
-@Autonomous(name="Auto Omni Drive To AprilTag", group = "drive")
-@Disabled
-public class RobotAutoDriveToAprilTagOmniAuto extends LinearOpMode
+@TeleOp(name="ATestTags", group = "Concept")
+//@Disabled
+public class Test extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 10.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 20.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -138,16 +137,10 @@ public class RobotAutoDriveToAprilTagOmniAuto extends LinearOpMode
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        //leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        //leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        //rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        //rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-
 
         if (USE_WEBCAM)
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
@@ -169,7 +162,7 @@ public class RobotAutoDriveToAprilTagOmniAuto extends LinearOpMode
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
                     //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                    if ((detection.id == DESIRED_TAG_ID)) {
                         // Yes, we want to use this tag.
                         targetFound = true;
                         desiredTag = detection;
@@ -196,8 +189,7 @@ public class RobotAutoDriveToAprilTagOmniAuto extends LinearOpMode
             }
 
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            //if (gamepad1.left_bumper && targetFound) {
-            if (targetFound) {
+            if (gamepad1.left_bumper && targetFound) {
 
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
@@ -290,7 +282,6 @@ public class RobotAutoDriveToAprilTagOmniAuto extends LinearOpMode
                     .build();
         }
     }
-
 
     /*
      Manually set the camera gain and exposure.

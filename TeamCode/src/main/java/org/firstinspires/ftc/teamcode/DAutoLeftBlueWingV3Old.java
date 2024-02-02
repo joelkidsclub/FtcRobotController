@@ -12,10 +12,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -24,14 +27,15 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="BlueWing", group = "drive")
+@Autonomous(name="BlueWingV3Old", group = "drive")
 //@Disabled
-public class AutoLeftBlueWingV3 extends LinearOpMode {
+public class DAutoLeftBlueWingV3Old extends LinearOpMode {
     /*
     elementPos for element position
        1 -> left
@@ -49,6 +53,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
+    //private AprilTagProcessor aprilTag2;
     SampleMecanumDrive drive;
     private DistanceSensor distanceSensor;
     private CRServo pixelMover;
@@ -74,6 +79,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
      */
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
+    //private VisionPortal visionPortal2;
     /**
      * The variable to store our instance of the vision portal.
      */
@@ -152,6 +158,27 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
     int ver = 1;
     public int desiredTagId = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
+    //****************************************
+    private DcMotor leftFrontDrive   = null;  //  Used to control the left front drive wheel
+    private DcMotor rightFrontDrive  = null;  //  Used to control the right front drive wheel
+    private DcMotor leftBackDrive    = null;  //  Used to control the left back drive wheel
+    private DcMotor rightBackDrive   = null;  //  Used to control the right back drive wheel
+
+    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
+    boolean rangeAchieved = false;
+    double  desiredDrive    = 0;        // Desired forward power/speed (-1 to +1)
+    double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
+    double  turn            = 0;
+    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MAX_AUTO_SPEED = 0.1;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.1;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+
+    //****************************************
+
     @Override
     public void runOpMode() throws InterruptedException {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -169,7 +196,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
 
         elementPos = initialize();
         //elementPos = 3; //Hardcoded for testing
-        //elementPos = 4; //Hardcoded for testing
+        elementPos = 4; //Hardcoded for testing
 
         if (elementPos == 1) {
             desiredTagId = 1;
@@ -187,11 +214,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
             desiredTagId = 3;
         }
 
+
         telemetry.addData("Element position =>", elementPos);
         telemetry.addData("Desired tag =>", elementPos);
         telemetry.update();
 
         //runArm(upSpeed, 138, 136);
+
         runArm(upSpeed, 238, 236);
 
         linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -227,8 +256,8 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         telemetry.addData("STEP 1: STATE_INITIAL. Next step=> ",currentState);
                         telemetry.addData("Element position => ",elementPos);
                         telemetry.update();
-                        visionPortal.setProcessorEnabled(tfod, false);
-                        visionPortal.setProcessorEnabled(aprilTag, false);
+                        //visionPortal.setProcessorEnabled(tfod, false);
+                        //visionPortal.setProcessorEnabled(aprilTag, false);
 
                     }
                     //closeGate();
@@ -249,7 +278,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
                         sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.5);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS1_STEP3:
@@ -284,15 +313,16 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
+
                     break;
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
@@ -328,7 +358,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
                         sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.5);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS2_STEP3:
@@ -363,14 +393,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-
-                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
                     break;
@@ -398,10 +427,9 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS3_STEP2;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_INITIAL_3);
-                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
-                        sleep(500);
+                        sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.25);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS3_STEP2:
@@ -443,15 +471,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-
-                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP6);
-
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
                     break;
@@ -478,15 +504,8 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         currentState = State.STATE_POS_REALIGN;
                         stateTime.reset();
                         telemetry.addData("Time 1=>", String.format("%4.1f ", stateTime.time()));
-                        telemetry.addData("Armup? pre => ", armUp);
-
-                        if(!armUp) {
-                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
-                            armUp = true;
-                        }
-                        telemetry.addData("Armup? post => ", armUp);
-                        movePixelBoxToDrop(2.5);
-                        dropYellowPixel();
+                        telemetry.addData("Armup? pre => ", armUp);;
+                        //dropPixel();
                         telemetry.update();
                     }
                     break;
@@ -505,13 +524,12 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: currentState => ", currentState);
                         //visionPortal.setProcessorEnabled(tfod, false);
                         //visionPortal.setProcessorEnabled(aprilTag, true);
-                        visionPortal.setProcessorEnabled(tfod, false);
-                        visionPortal.setProcessorEnabled(aprilTag, false);
-                        visionPortal.close();
+                        //visionPortal.setProcessorEnabled(tfod, false);
+                        //visionPortal.setProcessorEnabled(aprilTag, false);
+                        //visionPortal.close();
                         //telemetry.update();
-                        //detectAprilTag();
+                        detectAprilTag();
                         //telemetryAprilTag();
-
                         telemetry.addData("STEP 98: STATE_POS_REALIGN: nextState => ", currentState);
                         telemetry.update();
                     }
@@ -520,7 +538,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     break;
                 case STATE_PARK:
                     step = 99;
-                    visionPortal.setProcessorEnabled(tfod, false);
+                    //visionPortal.setProcessorEnabled(tfod, false);
                     visionPortal.setProcessorEnabled(aprilTag, false);
                     visionPortal.close();
                     if (!drive.isBusy()) {
@@ -579,9 +597,9 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
          */
     }
 
-    public void dropYellowPixel() {
+    public void dropPixel() {
         if (!pixelDropped) {
-            //movePixelBoxToDrop(2.75);
+            movePixelBoxToDrop(2.75);
             openGateServo(3);
             movePixelBoxToIntake(1.5);
             pixelDropped = true;
@@ -671,17 +689,17 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessors(tfod, aprilTag)
+                    .addProcessors(aprilTag)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessors(tfod, aprilTag)
+                    .addProcessors(aprilTag)
                     .build();
         }
 
-        visionPortal.setProcessorEnabled(tfod, true);
-        visionPortal.setProcessorEnabled(aprilTag, false);
+        //visionPortal.setProcessorEnabled(tfod, false);
+        visionPortal.setProcessorEnabled(aprilTag, true);
 
         drive.setPoseEstimate(new Pose2d(0,0,0));
 
@@ -706,7 +724,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
 
         traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-19.6,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-19.6,-83.50, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP6.end())
@@ -736,7 +754,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-26.25,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-26.25,-83.5, Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
                 .strafeLeft(25)
@@ -746,14 +764,10 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
 // Position 3
         traj_INITIAL_3 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-26,22, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-28,20, Math.toRadians(90)))
                 .build();
 
-        traj_STATE_LEFT_POS3_STEP1 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .back(1)
-                .build();
-
-        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end())
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
                 .lineToLinearHeading(new Pose2d(-50.5,23, Math.toRadians(90)))
                 .build();
 
@@ -763,7 +777,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-30,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-32,-83.5, Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP6.end())
                 .strafeLeft(19.5)
@@ -819,58 +833,154 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
         return  tfodEP;
     } //End Init
 
+
     public void detectAprilTag(){
+
         targetFound = false;
         desiredTag  = null;
-        visionPortal.setProcessorEnabled(tfod, false);
+
+        // step (using the FTC Robot Controller app on the phone).
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "FLD");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "FRD");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "BLD");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "BRD");
+
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        //visionPortal.setProcessorEnabled(tfod, false);
         visionPortal.setProcessorEnabled(aprilTag, true);
 
         telemetry.addData("In Detect ATag. Looking for: ", desiredTagId);
         telemetry.update();
 
-        sleep(1000);
-        // Step through the list of detected tags and look for a matching tag
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
-            sleep(1000);
-            telemetry.addData("something detected. Id:", detection.id);
-            telemetry.update();
-            if (detection.metadata != null) {
-                sleep(250);
-                //  Check to see if we want to track towards this tag.
-                if ((desiredTagId < 0) || (detection.id == desiredTagId)) {
-                    // Yes, we want to use this tag.
-                    targetFound = true;
-                    desiredTag = detection;
-                    break;  // don't look any further.
+        int i =0;
+        if (USE_WEBCAM)
+            setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        //while (runtime.seconds() < 3 && opModeIsActive()) {
+        while (opModeIsActive() && runtime.time() <= 3) {
+            telemetry.addLine("while loop going");
+            targetFound = false;
+            desiredTag = null;
+
+            // Step through the list of detected tags and look for a matching tag
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            telemetry.addLine("for loop going");
+            for (AprilTagDetection detection : currentDetections) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((detection.id == desiredTagId)) {
+                        // Yes, we want to use this tag.
+                        targetFound = true;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
                 } else {
-                    // This tag is in the library, but we do not want to track it right now.
-                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                    //telemetry.update();
-
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
-            } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
-                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-                //telemetry.update();
             }
+
+            telemetry.addData("Range=>", desiredTag.ftcPose.range);
+            telemetry.addData("DESIRED_DISTANCE=>", DESIRED_DISTANCE);
+
+            if(desiredTag != null && desiredTag.ftcPose.range <= DESIRED_DISTANCE ){
+                leftFrontDrive.setPower(0);
+                rightFrontDrive.setPower(0);
+                leftBackDrive.setPower(0);
+                rightBackDrive.setPower(0);
+                rangeAchieved = true;
+            }
+
+            // Tell the driver what we see, and what to do.
+            if (targetFound) {
+                telemetry.addData("\n>", "HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+            } else {
+                telemetry.addData("\n>", "Drive using joysticks to find valid target\n");
+            }
+
+            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            if (targetFound) {
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = desiredTag.ftcPose.bearing;
+                double yawError = desiredTag.ftcPose.yaw;
+
+                // Use the speed and turn "gains" to calculate how we want the robot to move.
+                desiredDrive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", desiredDrive, strafe, turn);
+            } else {
+
+                // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", desiredDrive, strafe, turn);
+            }
+            // Apply desired axes motions to the drivetrain.
+            //moveRobot((-1)* desiredDrive, strafe, turn);
+            moveRobot(desiredDrive , 0, 0);
+            telemetry.update();
+            sleep(10);
+            drive.update();
+            //break;
         }
-
-        // Tell the driver what we see, and what to do.
-        if (targetFound) {
-            sleep(500);
-            telemetry.addData("id","matches");
-            //telemetry.update();
-
-        } else {
-            sleep(500);
-            telemetry.addData("\n>","find valid target\n");
-            //telemetry.update();
-        }
-
         telemetry.addData("Exit Detect ATag", "...");
         telemetry.update();
+    }
+
+    /**
+     * Move robot according to desired axes motions
+     * <p>
+     * Positive X is forward
+     * <p>
+     * Positive Y is strafe left
+     * <p>
+     * Positive Yaw is counter-clockwise
+     */
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+
+
     }
 
     /**
@@ -907,9 +1017,9 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
             sleep(1000);
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format("X, Y, Z %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("Pitch - %6.1f Rol - %6.1f Yaw - %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("Range - %6.1f Detection - %6.1f Bearing - %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
@@ -963,6 +1073,44 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
             linearSlideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(250);   // optional pause after each move.
+        }
+    }
+
+    /*
+     Manually set the camera gain and exposure.
+     This can only be called AFTER calling initAprilTag(), and only works for Webcams;
+    */
+    private void setManualExposure(int exposureMS, int gain) {
+        // Wait for the camera to be open, then use the controls
+
+        if (visionPortal == null) {
+            return;
+        }
+
+        // Make sure camera is streaming before we try to set the exposure controls
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        // Set camera controls unless we are stopping.
+        if (!isStopRequested())
+        {
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            sleep(20);
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            gainControl.setGain(gain);
+            sleep(20);
         }
     }
 

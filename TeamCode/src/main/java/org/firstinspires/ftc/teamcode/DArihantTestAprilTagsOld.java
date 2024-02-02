@@ -2,12 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -30,13 +29,12 @@ import java.util.logging.Logger;
 
 @Config
 @Autonomous(name="ArihantTestAprilTagsOld", group = "drive")
-//@Disabled
-public class ArihantTestAprilTagsOld extends LinearOpMode {
+@Disabled
+public class DArihantTestAprilTagsOld extends LinearOpMode {
 
     private static final Logger logger = Logger.getLogger("AutoLeftBlueBackDrop");
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
-
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -124,7 +122,6 @@ public class ArihantTestAprilTagsOld extends LinearOpMode {
 
     boolean rangeAchieved = false;
     public void aprilTagCode() {
-
         // Desired turning power/speed (-1 to +1)
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  desiredDrive           = 0;        // Desired forward power/speed (-1 to +1)
@@ -234,6 +231,7 @@ public class ArihantTestAprilTagsOld extends LinearOpMode {
         rightBackDrive.setPower(rightBackPower);
 
     }
+
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();

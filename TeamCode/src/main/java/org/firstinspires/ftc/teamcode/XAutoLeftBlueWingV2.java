@@ -29,9 +29,9 @@ import java.util.List;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name="BlueWing", group = "drive")
+@Autonomous(name="XBlueWingV2", group = "drive")
 //@Disabled
-public class AutoLeftBlueWingV3 extends LinearOpMode {
+public class XAutoLeftBlueWingV2 extends LinearOpMode {
     /*
     elementPos for element position
        1 -> left
@@ -187,11 +187,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
             desiredTagId = 3;
         }
 
+
         telemetry.addData("Element position =>", elementPos);
         telemetry.addData("Desired tag =>", elementPos);
         telemetry.update();
 
         //runArm(upSpeed, 138, 136);
+
         runArm(upSpeed, 238, 236);
 
         linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -249,7 +251,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS1_STEP2);
                         sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.5);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS1_STEP3:
@@ -284,15 +286,16 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS1_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-                        drive.followTrajectory(traj_STATE_LEFT_POS1_STEP6);
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
+
                     break;
                 case STATE_LEFT_POS1_STEP7:
                     telemetry.addData("currentState => ", currentState);
@@ -328,7 +331,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         drive.followTrajectory(traj_STATE_LEFT_POS2_STEP2);
                         sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.5);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS2_STEP3:
@@ -363,14 +366,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS2_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-
-                        drive.followTrajectory(traj_STATE_LEFT_POS2_STEP6);
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
                     break;
@@ -398,10 +400,9 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                         currentState = State.STATE_LEFT_POS3_STEP2;
                         telemetry.addData("nextState => ", currentState);
                         drive.followTrajectory(traj_INITIAL_3);
-                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP1);
-                        sleep(500);
+                        sleep(1000);
                         dropPurple(1.5);
-                        purpleToInitial(0.25);
+                        purpleToInitial(1);
                     }
                     break;
                 case STATE_LEFT_POS3_STEP2:
@@ -443,15 +444,13 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.STATE_LEFT_POS3_STEP7;
                         telemetry.addData("nextState => ", currentState);
+                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP6);
+
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
                             armUp = true;
                         }
-                        movePixelBoxToDrop(2.5);
-
-                        drive.followTrajectory(traj_STATE_LEFT_POS3_STEP6);
-
-                        dropYellowPixel();
+                        dropPixel();
                         //sleep(30000);
                     }
                     break;
@@ -485,8 +484,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                             armUp = true;
                         }
                         telemetry.addData("Armup? post => ", armUp);
-                        movePixelBoxToDrop(2.5);
-                        dropYellowPixel();
+                        dropPixel();
                         telemetry.update();
                     }
                     break;
@@ -579,9 +577,9 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
          */
     }
 
-    public void dropYellowPixel() {
+    public void dropPixel() {
         if (!pixelDropped) {
-            //movePixelBoxToDrop(2.75);
+            movePixelBoxToDrop(2.75);
             openGateServo(3);
             movePixelBoxToIntake(1.5);
             pixelDropped = true;
@@ -706,7 +704,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
 
         traj_STATE_LEFT_POS1_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-19.6,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-19.6,-83.50, Math.toRadians(90)))
                 .build();
 
         traj_STATE_LEFT_POS1_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS1_STEP6.end())
@@ -736,7 +734,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS2_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-26.25,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-26.25,-83.5, Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS2_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP6.end())
                 .strafeLeft(25)
@@ -746,14 +744,10 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
 // Position 3
         traj_INITIAL_3 = drive.trajectoryBuilder(new Pose2d(0,0,0))
-                .lineToLinearHeading(new Pose2d(-26,22, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-28,20, Math.toRadians(90)))
                 .build();
 
-        traj_STATE_LEFT_POS3_STEP1 = drive.trajectoryBuilder(traj_INITIAL_3.end())
-                .back(1)
-                .build();
-
-        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP1.end())
+        traj_STATE_LEFT_POS3_STEP2 = drive.trajectoryBuilder(traj_INITIAL_3.end())
                 .lineToLinearHeading(new Pose2d(-50.5,23, Math.toRadians(90)))
                 .build();
 
@@ -763,7 +757,7 @@ public class AutoLeftBlueWingV3 extends LinearOpMode {
                 .build();
         traj_STATE_LEFT_POS3_STEP6 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP5.end())
                 //.strafeRight(22)
-                .lineToLinearHeading(new Pose2d(-30,-84, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-32,-83.5, Math.toRadians(90)))
                 .build();
         traj_STATE_LEFT_POS3_STEP7 = drive.trajectoryBuilder(traj_STATE_LEFT_POS3_STEP6.end())
                 .strafeLeft(19.5)

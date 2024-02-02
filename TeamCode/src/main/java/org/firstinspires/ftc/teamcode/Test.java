@@ -88,7 +88,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="ATestTags", group = "Concept")
-//@Disabled
+@Disabled
 public class Test extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

@@ -192,15 +192,23 @@ public class CS13353TeleOp extends LinearOpMode {
                 pixelMover2.setPower(-1);
             }
 
+
             //Open
             if(gamepad2.circle) {
                 gate.setPosition(0);//.135
+                gamepad2.rumble(4);
             }
 
             //Close
             if(gamepad2.square) {
                 gate.setPosition(0.28);//.73
+                if (gate.getPosition() == 0 ) {
+                    gamepad2.rumble(4);
+                }
             }
+
+            linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            linearSlideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             if(gamepad2.dpad_right) {
                 linearSlideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -88,7 +88,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="xAprilTag", group = "Linear OpMode")
-//@Disabled
+@Disabled
 public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

@@ -286,6 +286,7 @@ public class AutoRightRedWingV3 extends LinearOpMode {
 
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            //runArm(upSpeed, targetLeft - 10, targetRight - 0);
                             armUp = true;
                         }
                         movePixelBoxToDrop(2.5);
@@ -367,6 +368,7 @@ public class AutoRightRedWingV3 extends LinearOpMode {
 
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            //runArm(upSpeed, targetLeft - 10, targetRight - 0);
                             armUp = true;
                         }
                         movePixelBoxToDrop(2.5);
@@ -448,6 +450,7 @@ public class AutoRightRedWingV3 extends LinearOpMode {
 
                         if(!armUp) {
                             runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            //runArm(upSpeed, targetLeft - 10, targetRight - 8);
                             armUp = true;
                         }
                         movePixelBoxToDrop(2.5);
@@ -483,7 +486,8 @@ public class AutoRightRedWingV3 extends LinearOpMode {
                         telemetry.addData("Armup? pre => ", armUp);
 
                         if(!armUp) {
-                            runArm(upSpeed, targetLeft - 138, targetRight - 136);
+                            runArm(upSpeed, targetLeft - 136, targetRight - 136);
+                            //runArm(upSpeed, targetLeft - 10, targetRight-0);
                             armUp = true;
                         }
                         telemetry.addData("Armup? post => ", armUp);
@@ -719,7 +723,7 @@ public class AutoRightRedWingV3 extends LinearOpMode {
                 .build();
 
         traj_STATE_LEFT_POS2_STEP2 = drive.trajectoryBuilder(traj_INITIAL_2.end())
-                .lineToLinearHeading(new Pose2d(-40,-15, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-41,-15, Math.toRadians(-90)))
                 .build();
 
         traj_STATE_LEFT_POS2_STEP4 = drive.trajectoryBuilder(traj_STATE_LEFT_POS2_STEP2.end())

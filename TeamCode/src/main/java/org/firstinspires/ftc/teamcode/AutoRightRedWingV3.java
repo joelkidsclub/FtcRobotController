@@ -621,7 +621,6 @@ public class AutoRightRedWingV3 extends LinearOpMode {
         }
     }
 
-
     private void initTfod() {
 
     }   // end method initTfod()

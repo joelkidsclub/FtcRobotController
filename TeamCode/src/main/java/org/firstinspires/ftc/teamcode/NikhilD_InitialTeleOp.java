@@ -60,6 +60,15 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
     private double turnspeed = 1;
 
 
+    private DcMotor linearSlideLeft = null;
+
+    private DcMotor linearSlideRight = null;
+
+    private DcMotor intake = null;
+
+    private double upspeed;
+
+    private Servo pixelMover;
 
 
     @Override
@@ -72,7 +81,9 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "BLD");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "FRD");
         rightBackDrive = hardwareMap.get(DcMotor.class, "BRD");
-
+//        distanceSensor = hardwareMap.get(DistanceSensor.class, "dist");
+//        touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+//        colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -91,12 +102,15 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
 
 
 
-
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+
+        waitForStart();
+        runtime.reset();
+
+        upspeed = 0.4;
 
 
         // run until the end of the match (driver presses STOP)
@@ -168,9 +182,7 @@ public class NikhilD_InitialTeleOp extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-
+            telemetry.addData("Position", "Position " + pixelMover.getPosition());
 
 //            DistanceSensor();
 //            ColorSensor();
